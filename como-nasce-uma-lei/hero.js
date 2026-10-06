@@ -40,6 +40,12 @@
     const B = 230;
     // bloco de base
     pop(ease.back(prog(t, 0, 0.6)), P(0, 0, -70), () => R.drawBase(-B, -B, -70, 2 * B, 2 * B, 70));
+    R.drawCongressModel(t);
+    drawPaper(t);
+  };
+
+  // Congresso em miniatura com origem no centro (0,0,0); t = tempo desde o início da montagem
+  R.drawCongressModel = function (t) {
     // espelho d'água
     const wa = prog(t, 0.3, 0.8);
     if (wa > 0) {
@@ -103,6 +109,9 @@
         D.sphere(tr.x, tr.y, 7 + tr.r, tr.r, PAL().tree);
       });
     }
+  };
+
+  function drawPaper(t) {
     // folha do Projeto de Lei: deitada no canto, levanta e parte
     const px = 175, py = 190;
     const lift = prog(t, 2.2, 4.8);

@@ -61,7 +61,7 @@
   // título do guia: rótulo Inter 30px em y=314, Anton em duas linhas a partir de y=367 (x=120)
   function drawTitle(t) {
     const tin = VARIANT === 'B' ? 0.6 : 0.3;
-    const tout = VARIANT === 'B' ? R.HERO.END - 0.7 : R.INTRO_END + 0.25;
+    const tout = VARIANT === 'B' ? R.HERO.END - 0.7 : R.INTRO_END - 0.15;
     const a = prog(t, tin, tin + 0.5), out = prog(t, tout, tout + 0.5);
     if (a <= 0 || out >= 1) return;
     R.screen();
@@ -94,34 +94,26 @@
     ctx.letterSpacing = '0px';
   }
 
-  // assinatura fixa: canto superior direito da área segura (x ≤ 900, y ≥ 288)
+  // assinatura fixa: canto superior direito da área segura (x ≤ 900, y ≥ 288).
+  // Uma família só (Inter), selo com contorno fino e um ponto que pulsa.
   function drawHandle(t) {
     R.screen();
     ctx.save();
-    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
-    ctx.font = '400 41px Anton'; ctx.letterSpacing = '2px';
-    const w1 = ctx.measureText('pulsar').width;
-    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
-    const w0 = ctx.measureText('@').width, w2 = ctx.measureText('.science').width;
-    const right = 900, base = 326;
-    let x = right - (w0 + 4 + w1 + 3 + w2);
-    // pulsar: núcleo + ondas
-    const cx = x - 26, cy = base - 13;
-    for (let k = 0; k < 2; k++) {
-      const ph = ((t * 0.7 + k * 0.5) % 1);
-      ctx.strokeStyle = `rgba(240,233,216,${0.5 * (1 - ph)})`; ctx.lineWidth = 1.6;
-      ctx.beginPath(); ctx.arc(cx, cy, 5 + ph * 15, 0, Math.PI * 2); ctx.stroke();
-    }
-    ctx.fillStyle = R.PAL.paper; ctx.beginPath(); ctx.arc(cx, cy, 4.2, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = 'rgba(240,233,216,0.6)';
-    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
-    ctx.fillText('@', x, base - 2); x += w0 + 4;
-    ctx.fillStyle = R.PAL.paper;
-    ctx.font = '400 41px Anton'; ctx.letterSpacing = '2px';
-    ctx.fillText('pulsar', x, base); x += w1 + 3;
-    ctx.fillStyle = '#9DB0A3';
-    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
-    ctx.fillText('.science', x, base - 2);
+    const label = '@pulsar.science';
+    ctx.font = '600 25px Inter'; ctx.letterSpacing = '0.6px';
+    const tw = ctx.measureText(label).width;
+    const h = 46, padL = 40, padR = 20, w = padL + tw + padR;
+    const x = 900 - w, y = 290;
+    ctx.fillStyle = 'rgba(16,21,19,0.55)';
+    ctx.strokeStyle = 'rgba(240,233,216,0.35)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, h / 2); ctx.fill(); ctx.stroke();
+    const cx = x + 22, cy = y + h / 2;
+    const ph = (t * 0.8) % 1;
+    ctx.strokeStyle = `rgba(240,233,216,${0.45 * (1 - ph)})`; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(cx, cy, 4 + ph * 9, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = R.PAL.paper; ctx.beginPath(); ctx.arc(cx, cy, 3.6, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = R.PAL.paper; ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+    ctx.fillText(label, x + padL, cy + 1);
     ctx.restore();
     ctx.letterSpacing = '0px';
   }

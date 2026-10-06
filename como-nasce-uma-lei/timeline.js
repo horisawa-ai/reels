@@ -5,12 +5,12 @@
   const { clamp } = R.U;
 
   R.BEATS = [
-    { start: 2.9, end: 13.6, text: 'Todo mundo vota pra deputado, senador, presidente… Mas pouca gente sabe como as coisas funcionam lá dentro. Você sabe o que é preciso pra uma lei sair do papel? Vem que eu te mostro.' },
-    { start: 14.3, end: 28.0, text: 'Tudo começa com um projeto de lei. Quem pode propor? Deputados, senadores, o Presidente, o STF, tribunais superiores, a Procuradoria-Geral… e até você: com a assinatura de 1% dos eleitores, em pelo menos 5 estados.' },
-    { start: 29.8, end: 43.0, text: 'Se o projeto vem de fora do Congresso, ele começa pela Câmara dos Deputados. Lá, passa pelas comissões: um relator estuda, dá parecer, propõe mudanças. E a CCJ confere se ele respeita a Constituição.' },
+    { start: 3.7, end: 14.4, text: 'Todo mundo vota pra deputado, senador, presidente… Mas pouca gente sabe como as coisas funcionam lá dentro. Você sabe como uma ideia vira lei? Vem que eu te mostro.' },
+    { start: 15.1, end: 28.8, text: 'Tudo começa com um projeto de lei. Quem pode propor? Deputados, senadores, o Presidente, o STF, tribunais superiores, a Procuradoria-Geral… e até você: com a assinatura de 1% dos eleitores, em pelo menos 5 estados.' },
+    { start: 30.6, end: 43.8, text: 'Se o projeto vem de fora do Congresso, ele começa pela Câmara dos Deputados. Lá, passa pelas comissões: um relator estuda, dá parecer, propõe mudanças. E a CCJ confere se ele respeita a Constituição.' },
   ];
-  R.DURATION = 46.8;
-  R.INTRO_END = 2.6; // intro: maquete se monta + título, sem narração
+  R.DURATION = 47.6;
+  R.INTRO_END = 3.4; // intro: maquete se monta, câmera visita o Congresso + título, sem narração
 
   // tempo de cada palavra: proporcional ao tamanho, com pausas na pontuação
   for (const b of R.BEATS) {
@@ -47,27 +47,29 @@
     const k = [];
     const key = (t, at, zoom, o = {}) => k.push({ t, at, zoom, sy: o.sy ?? 900, dx: o.dx || 0, dy: o.dy || 0 });
     // abertura: perto da votação → abre para o todo → entra na estação 1
-    key(0, 'all', 0.35, { sy: 1180 });
-    key(R.INTRO_END - 0.2, 'all', 0.39, { sy: 1160 });
-    key(R.INTRO_END + 1.1, 'vote', 1.55, { sy: 980 });
+    key(0, 'all', 0.345, { sy: 1270 });
+    key(1.5, 'all', 0.37, { sy: 1260 });
+    key(2.6, 'cn', 1.8, { sy: 1180 });
+    key(R.INTRO_END, 'cn', 1.92, { sy: 1170, dx: 14 });
+    key(R.INTRO_END + 1.15, 'vote', 1.55, { sy: 980 });
     key(T.w(0, 'Mas') - 0.2, 'vote', 1.7, { sy: 980 });
-    key(T.w(0, 'dentro') + 0.4, 'all', 0.45, { sy: 990 });
-    key(T.w(0, 'Vem') - 0.1, 'all', 0.47, { sy: 990 });
+    key(T.w(0, 'dentro') + 0.4, 'all', 0.42, { sy: 1000 });
+    key(T.w(0, 'Vem') - 0.1, 'all', 0.43, { sy: 1000 });
     key(T.w(1, 'Tudo') + 0.3, 's1', 1.45);
     key(T.w(1, 'Deputados') - 0.2, 's1', 1.5, { dx: -40, dy: 20 });
     key(T.w(1, 'você'), 's1', 1.52, { dx: 20, dy: -50 });
     key(T.w(1, 'estados') + 0.4, 's1', 1.5, { dx: 10, dy: -30 });
     key(R.BEATS[1].end + 0.3, 's1', 1.42);
     // transição contínua: zoom out total → zoom in na estação 2
-    key(R.BEATS[1].end + 1.5, 'all', 0.46, { sy: 990 });
-    key(R.BEATS[1].end + 2.2, 'all', 0.47, { sy: 990 });
+    key(R.BEATS[1].end + 1.5, 'all', 0.42, { sy: 1000 });
+    key(R.BEATS[1].end + 2.2, 'all', 0.43, { sy: 1000 });
     key(T.w(2, 'Câmara') - 0.4, 's2', 1.45);
     key(T.w(2, 'relator') - 0.3, 's2', 1.6, { dx: -60, dy: -10 });
     key(T.w(2, 'mudanças') + 0.4, 's2', 1.6, { dx: 0, dy: -10 });
     key(T.w(2, 'CCJ') + 0.2, 's2', 1.62, { dx: 70, dy: 30 });
     key(R.BEATS[2].end + 0.4, 's2', 1.5, { dx: 40, dy: 20 });
-    key(R.BEATS[2].end + 1.8, 'all', 0.46, { sy: 990 });
-    key(R.DURATION, 'all', 0.47, { sy: 990 });
+    key(R.BEATS[2].end + 1.8, 'all', 0.42, { sy: 1000 });
+    key(R.DURATION, 'all', 0.43, { sy: 1000 });
     return k;
   };
   R.U.timeClamp = clamp;

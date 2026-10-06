@@ -10,7 +10,8 @@
 
   // ---------- ilhas (origem x,y e lado s)
   const ISL = {
-    vote: { x: -40, y: -40, s: 240, at: 0.1 },
+    cn: { x: -460, y: -460, s: 320, at: 0.05 },
+    vote: { x: -40, y: -40, s: 240, at: 0.15 },
     s1: { x: 90, y: 470, s: 300, at: 0.25 },
     s2: { x: 940, y: 560, s: 300, at: 0.4 },
     s3: { x: 1030, y: 1410, s: 300, at: 0.55 },
@@ -21,8 +22,8 @@
   const NAMES = { s1: '1 · PROPOSTA', s2: '2 · CÂMARA', s3: '3 · PLENÁRIO', s4: '4 · SENADO', s5: '5 · SANÇÃO', s6: '6 · PUBLICAÇÃO' };
   const center = k => ({ x: ISL[k].x + ISL[k].s / 2, y: ISL[k].y + ISL[k].s / 2 });
 
-  R.FOCUS = { all: { X: 0, Y: 1315 } };
-  for (const k in ISL) { const c = center(k); R.FOCUS[k] = P(c.x, c.y, 50); }
+  R.FOCUS = { all: { X: 0, Y: 1205 } };
+  for (const k in ISL) { const c = center(k); R.FOCUS[k] = P(c.x, c.y, k === 'cn' ? 75 : 50); }
 
   // ---------- cano principal (escada: alterna +x e +y)
   const PIPE = [[280, 650], [1150, 650], [1150, 1600], [2050, 1600], [2050, 2540], [2970, 2540]];
@@ -428,7 +429,17 @@
       for (let i = 0; i < 4; i++) D.box(O.x + 200, O.y + 200, SLAB + i * 5, 40, 30, 5, PAL().paper);
     });
   }
-  const STATIONS = { vote: stVote, s1: stS1, s2: stS2, s3: stS3, s4: stS4, s5: stS5, s6: stS6 };
+  // primeiro quadrado: o Congresso Nacional em miniatura (mesmo modelo da abertura B)
+  function stCn(t, add, ov, O) {
+    const cx = O.x + O.s / 2, cy = O.y + O.s / 2;
+    add(cx + cy, () => {
+      const c = P(cx, cy, SLAB);
+      ctx.save(); ctx.translate(c.X, c.Y); ctx.scale(0.7, 0.7);
+      R.drawCongressModel(t - 0.15);
+      ctx.restore();
+    });
+  }
+  const STATIONS = { cn: stCn, vote: stVote, s1: stS1, s2: stS2, s3: stS3, s4: stS4, s5: stS5, s6: stS6 };
 
   // base de maquete: sombra suave no chão + bloco verde com textura de pedra
   let stoneTex = null;
