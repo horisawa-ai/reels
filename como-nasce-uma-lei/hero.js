@@ -105,8 +105,10 @@
     for (const tr of sorted) {
       const s = ease.back(prog(t, 1.1 + tr.d, 1.5 + tr.d));
       pop(s, P(tr.x, tr.y, 0), () => {
-        D.cyl(tr.x, tr.y, 0, 2, 7, PAL().wood);
-        D.sphere(tr.x, tr.y, 7 + tr.r, tr.r, PAL().tree);
+        D.cyl(tr.x, tr.y, 0, 2, 8, PAL().wood, { noShadow: true });
+        D.sphere(tr.x + tr.r * 0.35, tr.y - tr.r * 0.2, 8 + tr.r * 0.8, tr.r * 0.75, R.shade(PAL().tree, 0.85));
+        D.sphere(tr.x, tr.y, 8 + tr.r, tr.r, PAL().tree);
+        D.sphere(tr.x - tr.r * 0.3, tr.y + tr.r * 0.25, 8 + tr.r * 1.45, tr.r * 0.62, R.shade(PAL().tree, 1.18));
       });
     }
   };

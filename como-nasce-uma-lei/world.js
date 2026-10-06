@@ -55,7 +55,7 @@
   function pipePiece(p, q, lit) {
     const A = P(p.x, p.y, PZ), B = P(q.x, q.y, PZ);
     ctx.lineCap = 'butt';
-    line(A, B, 21, PAL().line);
+    line(A, B, R.STYLE.lw ? 21 : 17, R.STYLE.lw ? PAL().line : R.shade(PAL().pipe, 0.55));
     line(A, B, 13.5, PAL().pipe);
     if (lit > 0) {
       const M = { X: lerp(A.X, B.X, lit), Y: lerp(A.Y, B.Y, lit) };
@@ -359,10 +359,10 @@
       const tilt = t < c0 ? 0 : Math.sin((t - c0) * 5) * 0.32 * (1 - prog(t, c1 - 0.3, c1 + 0.3));
       const top = P(bx, by, SLAB + 72);
       const L = 34, dxp = Math.cos(tilt) * L, dyp = Math.sin(tilt) * L;
-      D.ink(3); ctx.beginPath(); ctx.moveTo(top.X - dxp, top.Y - dyp); ctx.lineTo(top.X + dxp, top.Y + dyp); ctx.stroke();
+      D.inkForce(3); ctx.beginPath(); ctx.moveTo(top.X - dxp, top.Y - dyp); ctx.lineTo(top.X + dxp, top.Y + dyp); ctx.stroke();
       for (const sgn of [-1, 1]) {
         const ax = top.X + sgn * dxp, ay = top.Y + sgn * dyp;
-        D.ink(2); ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 9, ay + 20); ctx.moveTo(ax, ay); ctx.lineTo(ax + 9, ay + 20); ctx.stroke();
+        D.inkForce(2); ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 9, ay + 20); ctx.moveTo(ax, ay); ctx.lineTo(ax + 9, ay + 20); ctx.stroke();
         ctx.beginPath(); ctx.ellipse(ax, ay + 21, 13, 5, 0, 0, Math.PI * 2); ctx.fillStyle = PAL().mustard; ctx.fill(); D.ink(2.6); ctx.stroke();
       }
       D.sphere(bx, by, SLAB + 74, 4.5, PAL().mustard);
@@ -468,13 +468,15 @@
     ctx.beginPath(); ctx.moveTo(c[0].X, c[0].Y); ctx.lineTo(c[1].X, c[1].Y); ctx.lineTo(c[2].X, c[2].Y);
     const b = P(x, y, z); ctx.lineTo(b.X, b.Y); ctx.closePath(); ctx.fill();
     ctx.restore();
-    D.box(x, y, z, w, d, h, color || PAL().slab);
+    D.box(x, y, z, w, d, h, color || PAL().slab, { noShadow: true });
     D.onFace('top', x, y, z + h, g => {
-      g.fillStyle = stonePattern(); g.fillRect(0, 0, w, d);
+      if (R.STYLE.pattern) { g.fillStyle = stonePattern(); g.fillRect(0, 0, w, d); }
       g.strokeStyle = 'rgba(240,233,216,0.07)'; g.lineWidth = 2; g.strokeRect(8, 8, w - 16, d - 16);
     });
-    D.onFace('left', x, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, w, h); });
-    D.onFace('right', x + w, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, d, h); });
+    if (R.STYLE.pattern) {
+      D.onFace('left', x, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, w, h); });
+      D.onFace('right', x + w, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, d, h); });
+    }
   }
   R.drawBase = drawBase;
 
