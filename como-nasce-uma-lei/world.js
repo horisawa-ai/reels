@@ -19,7 +19,7 @@
     s5: { x: 1970, y: 2350, s: 300, at: 0.85 },
     s6: { x: 2820, y: 2440, s: 300, at: 1.0 },
   };
-  const NAMES = { s1: '1 · PROPOSTA', s2: '2 · CÂMARA', s3: '3 · PLENÁRIO', s4: '4 · SENADO', s5: '5 · SANÇÃO', s6: '6 · PUBLICAÇÃO' };
+  const NAMES = { s1: '1 · PROPOSTA', s2: '2 · COMISSÕES', s3: '3 · PLENÁRIO', s4: '4 · SENADO', s5: '5 · SANÇÃO OU VETO', s6: '6 · PUBLICAÇÃO' };
   const center = k => ({ x: ISL[k].x + ISL[k].s / 2, y: ISL[k].y + ISL[k].s / 2 });
 
   R.FOCUS = { all: { X: 0, Y: 1205 } };
@@ -43,8 +43,8 @@
     const e = PIPE[PIPE.length - 1]; return { x: e[0], y: e[1] };
   }
   // trechos escondidos dentro das máquinas
-  const HIDE = [[0, 14], [700, 750], [778, 822], [928, 972]];
-  const MACH = { relator: 725, emendas: 800, ccj: 950, s2in: 660, s3in: 1630 };
+  const HIDE = [[0, 14], [700, 750], [778, 822], [928, 972], [1758, 1802], [2628, 2672], [3566, 3614], [4536, 4600]];
+  const MACH = { relator: 725, emendas: 800, ccj: 950, s2in: 660, s3in: 1630, mesa: 1780, rev: 2650, pres: 3590, press: 4560 };
   const inIsland = (x, y) => Object.values(ISL).some(i => x > i.x && x < i.x + i.s && y > i.y && y < i.y + i.s);
 
   // ---------- desenho do cano
@@ -114,12 +114,18 @@
       [B[1].end - 0.5, 0],
       [T.w(2, 'Câmara') - 0.2, MACH.s2in],
       [T.w(2, 'relator') - 0.15, MACH.relator],
-      [T.w(2, 'propõe') - 0.15, MACH.relator],
-      [T.w(2, 'propõe') + 0.35, MACH.emendas],
+      [T.w(2, 'propor') - 0.15, MACH.relator],
+      [T.w(2, 'propor') + 0.35, MACH.emendas],
       [T.w(2, 'CCJ') - 0.6, MACH.emendas],
       [T.w(2, 'CCJ') - 0.05, MACH.ccj],
-      [B[2].end + 0.2, MACH.ccj],
-      [R.DURATION - 0.6, MACH.s3in],
+      [T.w(3, 'outros'), MACH.ccj],
+      [T.w(3, 'plenário', 2) + 0.6, MACH.mesa],
+      [B[3].end + 0.6, MACH.mesa],
+      [T.w(4, 'revisa'), MACH.rev],
+      [B[4].end + 0.5, MACH.rev],
+      [T.w(5, 'Presidente') + 0.4, MACH.pres],
+      [B[5].end + 0.5, MACH.pres],
+      [T.w(6, 'publicada'), MACH.press],
     ];
     if (t < K[0][0]) return null;
     for (let i = 0; i < K.length - 1; i++) {
@@ -133,15 +139,16 @@
   }
   function lift(s) {
     let l = 0;
-    for (const m of [MACH.relator, MACH.emendas, MACH.ccj]) l = Math.max(l, 1 - clamp(Math.abs(s - m) / 34));
+    for (const m of [MACH.relator, MACH.emendas, MACH.ccj, MACH.mesa, MACH.rev, MACH.pres]) l = Math.max(l, 1 - clamp(Math.abs(s - m) / 34));
     return ease.inOut(l);
   }
   R.PIPE = { at, LEN, plPos };
 
   // ---------- pessoinha
   function person(x, y, z, color, o = {}) {
-    D.cyl(x, y, z, 9, 24, color);
-    D.sphere(x, y, z + 33, 8.5, PAL().skin);
+    D.cyl(x, y, z, 9, 20, color);
+    D.sphere(x, y, z + 21, 9, color);
+    D.sphere(x, y, z + 36, 8, PAL().skin);
     if (o.lamp != null) D.lamp(x, y, z + 52, o.lamp, 5);
   }
 
@@ -255,7 +262,7 @@
     const roles = [
       ['DEPUTADOS', 'Deputados', PAL().sage], ['SENADORES', 'senadores', PAL().slate],
       ['PRESIDENTE', 'Presidente', PAL().sand], ['STF', 'STF', PAL().lilac],
-      ['TRIBUNAIS SUPERIORES', 'tribunais', PAL().stone], ['PGR', 'Procuradoria', PAL().gray],
+      ['TRIBUNAIS SUPERIORES', 'tribunais', PAL().stone], ['PGR', 'Procurador', PAL().gray],
       ['VOCÊ', 'você', PAL().mustard],
     ];
     roles.forEach(([lab, w, color], i) => {
@@ -265,7 +272,8 @@
       const tw = T.w(1, w);
       const on = prog(t, tw, tw + 0.2);
       add(px + py, () => {
-        D.box(px - 20, py - 15, SLAB, 40, 30, 24, PAL().wood);
+        desk(px - 20, py - 15, 40, 30, 24, PAL().wood);
+        D.box(px - 10, py - 8, SLAB + 24, 14, 10, 2, PAL().paper);
         D.lamp(px + 12, py - 6, SLAB + 30, on, 4.5);
       });
       const hx = px + dx * 30, hy = py + dy * 30;
@@ -315,7 +323,7 @@
 
     // Relator: mesa com máquina de escrever
     const rx = O.x + 42, ry = O.y + 68;
-    const typing = t > T.w(2, 'relator') && t < T.w(2, 'propõe');
+    const typing = t > T.w(2, 'relator') && t < T.w(2, 'propor');
     add(rx + 23 + ry + 22, () => {
       D.box(rx, ry, SLAB, 46, 44, 30, PAL().wood);
       D.box(rx + 8, ry + 12, SLAB + 30, 30, 22, 7, PAL().dark);
@@ -326,8 +334,8 @@
       D.lamp(rx + 42, ry + 4, SLAB + 36, prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.2), 4.5);
     });
     add(rx + ry + 10, () => person(rx + 20, ry - 18, SLAB, PAL().slate));
-    tags.push(() => { const s = R.S(rx + 20, ry - 18, SLAB + 64); R.pill(s.x, s.y, 'RELATOR', prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.3) * (1 - prog(t, T.w(2, 'propõe') + 0.3, T.w(2, 'propõe') + 0.6)), { anchorBottom: true, size: 29 }); });
-    tags.push(() => { const s = R.S(rx + 60, ry + 40, SLAB + 120); R.pill(s.x, s.y, 'PARECER', prog(t, T.w(2, 'parecer'), T.w(2, 'parecer') + 0.3) * (1 - prog(t, T.w(2, 'propõe') + 0.3, T.w(2, 'propõe') + 0.6)), { anchorBottom: true, size: 29, fill: PAL().sage }); });
+    tags.push(() => { const s = R.S(rx + 20, ry - 18, SLAB + 64); R.pill(s.x, s.y, 'RELATOR', prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(rx + 60, ry + 40, SLAB + 120); R.pill(s.x, s.y, 'PARECER', prog(t, T.w(2, 'parecer'), T.w(2, 'parecer') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { anchorBottom: true, size: 29, fill: PAL().sage }); });
 
     // Emendas: prensa de carimbo
     const ex = O.x + 120, ey = O.y + 70;
@@ -380,55 +388,206 @@
     void plAt;
   }
 
-  // estações seguintes (aparecem na visão geral; ganham animação nas próximas etapas)
-  function stS3(t, add, ov, O) {
-    const cx = O.x + 215, cy = O.y + 85;
-    add(cx + cy - 30, () => {
-      for (let row = 0; row < 3; row++) {
-        const r = 34 + row * 20;
-        for (let i = 0; i <= 10; i++) {
-          const a = (-20 + i * 11) * Math.PI / 180 + Math.PI / 2 * 0;
-          const x = cx - Math.cos(a) * r * 0 + Math.cos(Math.PI * 0.5 + a) * r, y = cy + Math.sin(Math.PI * 0.5 + a) * r;
-          D.lamp(x, y, SLAB + 6 + row * 6, 0, 3.6);
-        }
-      }
-      D.box(cx - 14, cy - 14, SLAB, 28, 28, 18, PAL().wood);
-    });
-    add(O.x + 60 + O.y + 245, () => {
-      D.box(O.x + 30, O.y + 220, SLAB, 70, 44, 40, PAL().dark);
-      D.onFace('left', O.x + 30, O.y + 264, SLAB + 40, g => { g.fillStyle = PAL().lampOff; g.font = '900 20px Inter'; g.fillText('000', 12, 27); });
-    });
+  // ---------- auxiliares das estações finais
+  // curva tracejada com seta (coordenadas de tela do mundo), desenhada até a fração p
+  function dashArc(A, B, bend, p, o = {}) {
+    if (p <= 0) return;
+    const C = { X: (A.X + B.X) / 2 + bend.X, Y: (A.Y + B.Y) / 2 + bend.Y };
+    const pt = u => ({ X: (1 - u) * (1 - u) * A.X + 2 * (1 - u) * u * C.X + u * u * B.X, Y: (1 - u) * (1 - u) * A.Y + 2 * (1 - u) * u * C.Y + u * u * B.Y });
+    ctx.save();
+    ctx.globalAlpha = o.alpha == null ? 1 : o.alpha;
+    ctx.strokeStyle = o.color || PAL().paper; ctx.lineWidth = o.w || 7; ctx.lineCap = 'round';
+    ctx.setLineDash([o.w ? o.w * 2.6 : 18, o.w ? o.w * 2.2 : 15]);
+    ctx.beginPath();
+    const N = 40, M = Math.max(1, Math.round(N * p));
+    for (let i = 0; i <= M; i++) { const q = pt(i / N); i ? ctx.lineTo(q.X, q.Y) : ctx.moveTo(q.X, q.Y); }
+    ctx.stroke(); ctx.setLineDash([]);
+    const e = pt(M / N), e0 = pt(Math.max(0, M - 1) / N), a = Math.atan2(e.Y - e0.Y, e.X - e0.X), s = (o.w || 7) * 3.2;
+    ctx.fillStyle = o.color || PAL().paper;
+    ctx.beginPath(); ctx.moveTo(e.X + Math.cos(a) * s, e.Y + Math.sin(a) * s);
+    ctx.lineTo(e.X + Math.cos(a + 2.4) * s, e.Y + Math.sin(a + 2.4) * s);
+    ctx.lineTo(e.X + Math.cos(a - 2.4) * s, e.Y + Math.sin(a - 2.4) * s); ctx.fill();
+    ctx.restore();
+    return pt;
   }
-  function stS4(t, add, ov, O) {
+  function ghostSheet(X, Y, sc, rot, alpha, o = {}) {
+    if (alpha <= 0) return;
+    ctx.save(); ctx.globalAlpha = alpha; D.sheet(X, Y, sc, rot, o); ctx.restore();
+  }
+  // mesa (gabinete + tampo com leve sobra)
+  function desk(x, y, w, d, h, color) {
+    D.box(x + 2, y + 2, SLAB, w - 4, d - 4, h - 4, R.shade(color, 0.9));
+    D.box(x, y, SLAB + h - 4, w, d, 4, R.shade(color, 1.12));
+  }
+  // painel em pé virado para a câmera (face +y); fn desenha na face (largura w, altura h)
+  function board(x, y, z, w, h, color, fn) {
+    D.box(x + 6, y, SLAB, 6, 6, z - SLAB, PAL().gray);
+    D.box(x + w - 12, y, SLAB, 6, 6, z - SLAB, PAL().gray);
+    D.box(x, y, z, w, 8, h, color);
+    D.onFace('left', x, y + 8, z + h, fn);
+  }
+
+  // 4 · Plenário da Câmara: assentos em arco que acendem até o quórum
+  const seatOrder = (() => { const r = rng(17), a = Array.from({ length: 70 }, (_, i) => i); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; })();
+  function stS3(t, add, ov, O, tags) {
+    const T = R.T;
+    const mx = O.x + 120, my = O.y + 150;
+    const arrive = T.w(3, 'plenário', 2);
+    const c0 = T.w(3, 'metade') - 0.3, c1 = T.w(3, 'presentes') + 0.4;
+    const count = Math.round(257 * ease.out(prog(t, c0, c1)));
+    const litN = Math.round(70 * count / 513);
+    const rows = [46, 62, 78, 94, 110];
+    let k = 0;
+    rows.forEach((r, ri) => {
+      const n = 8 + ri * 3;
+      for (let i = 0; i < n; i++) {
+        const a = (-86 + i * (82 / (n - 1))) * Math.PI / 180;
+        const x = mx + Math.cos(a) * r, y = my + Math.sin(a) * r, h = 4 + ri * 5;
+        const on = seatOrder.indexOf(k++) < litN ? 0.56 : 0;
+        add(x + y, () => { D.box(x - 5, y - 5, SLAB, 10, 10, h, PAL().dark); D.lamp(x, y, SLAB + h + 4, on, 3.6); });
+      }
+    });
+    add(mx + my, () => desk(mx - 22, my - 22, 44, 44, 28, PAL().wood));
+    // placar
+    const vOn = prog(t, T.w(3, 'maioria'), T.w(3, 'maioria') + 0.25);
+    add(O.x + 65 + O.y + 250, () => board(O.x + 12, O.y + 248, SLAB + 34, 112, 74, PAL().dark, g => {
+      g.fillStyle = 'rgba(240,233,216,0.7)'; g.font = '500 8px "IBM Plex Mono"'; g.fillText('PRESENTES', 8, 13);
+      g.fillStyle = count >= 257 ? PAL().lampOn : PAL().paper; g.font = '500 27px "IBM Plex Mono"';
+      g.fillText(String(count).padStart(3, '0'), 8, 41);
+      g.fillStyle = 'rgba(240,233,216,0.7)'; g.font = '500 11px "IBM Plex Mono"'; g.fillText('/ 513', 62, 41);
+      g.beginPath(); g.arc(12, 60, 4, 0, Math.PI * 2); g.fillStyle = vOn > 0.5 ? PAL().lampOn : PAL().lampOff; g.fill();
+      g.fillStyle = PAL().paper; g.font = '600 7.5px Inter'; g.fillText('MAIORIA DOS VOTOS', 21, 63);
+    }));
+    tags.push(() => { const s = R.S(mx, my, SLAB + 120); R.pill(s.x, s.y, 'PLENÁRIO', prog(t, arrive, arrive + 0.3) * (1 - prog(t, c0, c0 + 0.3)), { anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(O.x + 68, O.y + 252, SLAB + 130); R.pill(s.x, s.y, 'QUÓRUM: 257', prog(t, c1, c1 + 0.3) * (1 - prog(t, R.BEATS[3].end + 0.6, R.BEATS[3].end + 1)), { anchorBottom: true, size: 29, fill: PAL().ok }); });
+  }
+
+  // 5 · Senado: revisão com três saídas
+  function stS4(t, add, ov, O, tags) {
+    const T = R.T;
     add(O.x + 70 + O.y + 200, () => {
       D.box(O.x + 20, O.y + 150, SLAB, 100, 100, 30, PAL().stone);
       D.dome(O.x + 70, O.y + 200, SLAB + 30, 42, 46, PAL().paper);
     });
-    add(O.x + 240 + O.y + 50, () => {
-      D.frustum(O.x + 240, O.y + 50, SLAB, 18, 22, 34, PAL().gray, { hollow: true });
+    const rx = O.x + 100, ry = O.y + 100;
+    const rv = prog(t, T.w(4, 'revisa'), T.w(4, 'revisa') + 0.25);
+    add(rx + ry, () => {
+      D.box(rx - 22, ry - 22, SLAB, 44, 44, 30, PAL().stone);
+      D.onFace('left', rx - 22, ry + 22, SLAB + 30, g => { g.fillStyle = PAL().ink; g.font = '700 7.5px Inter'; g.fillText('REVISÃO', 7, 18); });
+      D.lamp(rx + 18, ry - 18, SLAB + 36, rv, 5);
     });
+    const bx = O.x + 240, by = O.y + 50;
+    add(bx + by, () => D.frustum(bx, by, SLAB, 18, 23, 34, PAL().gray, { hollow: true }));
+    tags.push(() => { const s = R.S(O.x + 70, O.y + 200, SLAB + 110); R.pill(s.x, s.y, 'SENADO', prog(t, T.w(4, 'Senado'), T.w(4, 'Senado') + 0.3) * (1 - prog(t, T.w(4, 'aprovar') - 0.2, T.w(4, 'aprovar') + 0.1)), { anchorBottom: true, size: 29 }); });
+    // três desfechos
+    const a1 = T.w(4, 'aprovar'), a2 = T.w(4, 'rejeitar'), a3 = T.w(4, 'mudar'), end = R.BEATS[4].end;
+    const fade = 1 - prog(t, end + 0.4, end + 0.9);
+    tags.push(() => { const s = R.S(O.x + 170, O.y + 260, SLAB + 40); R.pill(s.x, s.y, 'APROVA → PRESIDENTE', prog(t, a1, a1 + 0.3) * fade, { anchorBottom: true, size: 26, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(bx, by, SLAB + 90); R.pill(s.x, s.y, 'REJEITA → ARQUIVO', prog(t, a2, a2 + 0.3) * fade, { anchorBottom: true, size: 26 }); });
+    tags.push(() => { const s = R.S(rx - 70, ry - 120, SLAB + 120); R.pill(s.x, s.y, 'MUDOU → VOLTA À CÂMARA', prog(t, a3, a3 + 0.3) * fade, { anchorBottom: true, size: 26, fill: PAL().mustard }); });
+    // folha fantasma indo para o arquivo
+    const g1 = prog(t, a2 + 0.15, a2 + 1.1);
+    if (g1 > 0 && g1 < 1) {
+      const e = ease.inOut(g1), x = lerp(rx, bx, e), y = lerp(ry, by, e), z = SLAB + 40 + Math.sin(Math.PI * g1) * 70 - e * 10;
+      add(x + y + 300, () => { const c = P(x, y, z); ghostSheet(c.X, c.Y, 0.9 * (1 - e * 0.4), g1 * 4, 0.85 * (1 - prog(g1, 0.8, 1))); });
+    }
+    // caminho de volta para a Câmara (seta tracejada até a estação 2)
+    const g2 = ease.inOut(prog(t, a3 + 0.1, T.w(4, 'Câmara') + 0.5));
+    if (g2 > 0) {
+      const S2 = ISL.s2, A = P(rx, ry, SLAB + 60), Bp = P(S2.x + 210, S2.y + 260, SLAB + 60);
+      add(1e6, () => {
+        const pt = dashArc(A, Bp, { X: -260, Y: 0 }, g2, { alpha: 0.9 * fade, color: PAL().mustard, w: 6 });
+        if (pt && g2 < 1) { const q = pt(g2); ghostSheet(q.X, q.Y, 0.9, -0.2, 0.9 * fade); }
+      });
+    }
   }
-  function stS5(t, add, ov, O) {
+
+  // 6 · Sanção ou veto + derrubada do veto
+  function stS5(t, add, ov, O, tags) {
+    const T = R.T;
     add(O.x + 205 + O.y + 75, () => {
       D.box(O.x + 140, O.y + 40, SLAB, 130, 70, 10, PAL().stone);
       for (let i = 0; i < 6; i++) D.box(O.x + 146 + i * 22, O.y + 100, SLAB + 10, 6, 6, 30, PAL().paper);
       D.box(O.x + 132, O.y + 32, SLAB + 40, 146, 86, 8, PAL().paper);
     });
-    add(O.x + 40 + O.y + 250, () => {
-      D.box(O.x + 20, O.y + 225, SLAB, 50, 40, 26, PAL().wood);
-      D.cyl(O.x + 45, O.y + 245, SLAB + 26, 7, 18, PAL().dark);
+    // mesa do Presidente sobre o cano, com dois carimbos
+    const dx = O.x + 80, dy = O.y + 120;
+    const sA = T.w(5, 'sancionar'), sV = T.w(5, 'vetar');
+    const hitA = pulse(t, sA, sA + 0.45), hitV = pulse(t, sV, sV + 0.45);
+    add(dx + dy, () => {
+      desk(dx - 24, dy - 24, 48, 48, 28, PAL().wood);
+      D.cyl(dx - 12, dy - 12, SLAB + 28 + 14 - hitA * 12, 5, 9, PAL().ok);
+      D.sphere(dx - 12, dy - 12, SLAB + 28 + 27 - hitA * 12, 5.5, PAL().ok);
+      D.cyl(dx + 12, dy + 12, SLAB + 28 + 14 - hitV * 12, 5, 9, PAL().no);
+      D.sphere(dx + 12, dy + 12, SLAB + 28 + 27 - hitV * 12, 5.5, PAL().no);
     });
+    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'SANCIONA', prog(t, sA, sA + 0.25) * (1 - prog(t, sV - 0.1, sV + 0.1)), { anchorBottom: true, size: 29, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'OU VETA (TOTAL OU PARCIAL)', prog(t, sV, sV + 0.25) * (1 - prog(t, T.w(5, 'silêncio') - 0.2, T.w(5, 'silêncio'))), { anchorBottom: true, size: 26, fill: PAL().no }); });
+    // relógio dos 15 dias úteis
+    const kx = O.x + 225, ky = O.y + 160;
+    const k0 = T.w(5, 'dias'), k1 = T.w(5, 'tácita');
+    const turn = ease.inOut(prog(t, k0, k1));
+    add(kx + ky, () => {
+      D.cyl(kx, ky, SLAB, 9, 6, PAL().gray);
+      D.cyl(kx, ky, SLAB + 6, 2.4, 54, PAL().gray);
+      const c = P(kx, ky, SLAB + 86), r = 26;
+      ctx.save();
+      ctx.fillStyle = PAL().paper; ctx.beginPath(); ctx.arc(c.X, c.Y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = PAL().dark; ctx.lineWidth = 2.4; ctx.stroke();
+      if (turn > 0) { ctx.fillStyle = `rgba(${PAL().glow},0.55)`; ctx.beginPath(); ctx.moveTo(c.X, c.Y); ctx.arc(c.X, c.Y, r - 3, -Math.PI / 2, -Math.PI / 2 + turn * Math.PI * 2); ctx.fill(); }
+      for (let i = 0; i < 15; i++) { const a = -Math.PI / 2 + i / 15 * Math.PI * 2; ctx.strokeStyle = PAL().dark; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(c.X + Math.cos(a) * (r - 6), c.Y + Math.sin(a) * (r - 6)); ctx.lineTo(c.X + Math.cos(a) * (r - 2), c.Y + Math.sin(a) * (r - 2)); ctx.stroke(); }
+      const a = -Math.PI / 2 + turn * Math.PI * 2;
+      ctx.strokeStyle = PAL().ink; ctx.lineWidth = 3; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(c.X, c.Y); ctx.lineTo(c.X + Math.cos(a) * (r - 8), c.Y + Math.sin(a) * (r - 8)); ctx.stroke();
+      ctx.fillStyle = PAL().ink; ctx.beginPath(); ctx.arc(c.X, c.Y, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    });
+    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, '15 DIAS ÚTEIS', prog(t, k0, k0 + 0.3) * (1 - prog(t, k1, k1 + 0.3)), { anchorBottom: true, size: 28 }); });
+    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, 'SILÊNCIO = SANÇÃO', prog(t, k1, k1 + 0.3) * (1 - prog(t, T.w(5, 'Congresso') - 0.2, T.w(5, 'Congresso'))), { anchorBottom: true, size: 28, fill: PAL().mustard }); });
+    // derrubada do veto: placar da sessão conjunta
+    const d0 = T.w(5, 'Congresso'), d1 = T.w(5, 'deputados'), d2 = T.w(5, 'senadores');
+    const nD = Math.round(257 * ease.out(prog(t, d1 - 0.2, d1 + 0.8))), nS = Math.round(41 * ease.out(prog(t, d2 - 0.2, d2 + 0.6)));
+    add(O.x + 75 + O.y + 262, () => board(O.x + 14, O.y + 256, SLAB + 30, 124, 80, PAL().dark, g => {
+      g.fillStyle = 'rgba(240,233,216,0.7)'; g.font = '500 7.5px "IBM Plex Mono"'; g.fillText('DERRUBADA DO VETO', 7, 12);
+      g.fillStyle = nD >= 257 ? PAL().lampOn : PAL().paper; g.font = '500 22px "IBM Plex Mono"'; g.fillText(String(nD).padStart(3, '0'), 7, 40);
+      g.fillStyle = 'rgba(240,233,216,0.75)'; g.font = '600 7.5px Inter'; g.fillText('DEPUTADOS', 56, 31); g.fillText('DE 513', 56, 41);
+      g.fillStyle = nS >= 41 ? PAL().lampOn : PAL().paper; g.font = '500 22px "IBM Plex Mono"'; g.fillText(String(nS).padStart(3, '0'), 7, 68);
+      g.fillStyle = 'rgba(240,233,216,0.75)'; g.font = '600 7.5px Inter'; g.fillText('SENADORES', 56, 59); g.fillText('DE 81', 56, 69);
+    }));
+    tags.push(() => { const s = R.S(O.x + 76, O.y + 260, SLAB + 140); R.pill(s.x, s.y, 'MAIORIA ABSOLUTA NAS DUAS CASAS', prog(t, T.w(5, 'absoluta'), T.w(5, 'absoluta') + 0.3) * (1 - prog(t, R.BEATS[5].end + 0.6, R.BEATS[5].end + 1)), { anchorBottom: true, size: 24, fill: PAL().mustard }); });
+    void d0;
   }
-  function stS6(t, add, ov, O) {
+
+  // 7 · Diário Oficial e vigência
+  function stS6(t, add, ov, O, tags) {
+    const T = R.T;
+    const p0 = T.w(6, 'publicada');
+    const hit = Math.max(pulse(t, p0 + 0.1, p0 + 0.5), pulse(t, p0 + 0.6, p0 + 1.0));
     add(O.x + 180 + O.y + 100, () => {
       D.box(O.x + 130, O.y + 60, SLAB, 100, 80, 60, PAL().gray);
-      D.box(O.x + 140, O.y + 70, SLAB + 60, 80, 60, 10, PAL().dark);
+      D.onFace('left', O.x + 130, O.y + 140, SLAB + 60, g => { g.fillStyle = PAL().paper; g.font = '600 9px Inter'; g.fillText('DIÁRIO OFICIAL', 10, 24); });
+      D.box(O.x + 140, O.y + 70, SLAB + 60 + 8 - hit * 8, 80, 60, 10, PAL().dark);
     });
     add(O.x + 90 + O.y + 220, () => D.cyl(O.x + 90, O.y + 220, SLAB, 28, 40, PAL().paper));
-    add(O.x + 220 + O.y + 220, () => {
-      for (let i = 0; i < 4; i++) D.box(O.x + 200, O.y + 200, SLAB + i * 5, 40, 30, 5, PAL().paper);
+    const outP = ease.out(prog(t, p0 + 0.9, p0 + 1.8));
+    add(O.x + 220 + O.y + 225, () => {
+      for (let i = 0; i < 4; i++) D.box(O.x + 200, O.y + 205, SLAB + i * 5, 40, 30, 5, PAL().paper);
+      if (outP > 0) { const x = lerp(O.x + 185, O.x + 220, outP), y = lerp(O.y + 150, O.y + 220, outP), c = P(x, y, SLAB + 26 + Math.sin(Math.PI * outP) * 20); D.sheet(c.X, c.Y, 1.2, -0.1, { tag: 'LEI', glow: 1 - outP * 0.6 }); }
     });
+    tags.push(() => { const s = R.S(O.x + 220, O.y + 220, SLAB + 120); R.pill(s.x, s.y, 'LEI PUBLICADA', prog(t, p0 + 1.4, p0 + 1.7) * (1 - prog(t, T.w(6, 'data') - 0.2, T.w(6, 'data'))), { anchorBottom: true, size: 29, fill: PAL().ok }); });
+    // calendário da vigência
+    const cd = T.w(6, 'data'), c45 = T.w(6, '45');
+    const n45 = Math.round(45 * ease.out(prog(t, c45 - 0.1, c45 + 1.0)));
+    add(O.x + 45 + O.y + 25, () => board(O.x + 15, O.y + 22, SLAB + 22, 64, 70, PAL().paper, g => {
+      g.fillStyle = PAL().sage; g.fillRect(0, 0, 64, 15);
+      g.fillStyle = PAL().paper; g.font = '600 7px Inter'; g.fillText('VIGÊNCIA', 8, 10.5);
+      g.fillStyle = PAL().ink;
+      if (t >= c45 - 0.1) { g.font = '500 24px "IBM Plex Mono"'; g.fillText(String(n45), 8, 45); g.font = '600 7px Inter'; g.fillText('DIAS DEPOIS', 8, 59); }
+      else if (t >= cd) { g.font = '600 8px Inter'; g.fillText('NA DATA', 8, 36); g.fillText('QUE A LEI', 8, 47); g.fillText('DEFINIR', 8, 58); }
+    }));
+    tags.push(() => { const s = R.S(O.x + 47, O.y + 26, SLAB + 120); R.pill(s.x, s.y, 'SE A LEI NÃO DISSER: 45 DIAS', prog(t, c45 + 0.9, c45 + 1.2) * (1 - prog(t, R.BEATS[6].end + 0.6, R.BEATS[6].end + 1)), { anchorBottom: true, size: 24, fill: PAL().mustard }); });
   }
+
   // primeiro quadrado: o Congresso Nacional em miniatura (mesmo modelo da abertura B)
   function stCn(t, add, ov, O) {
     const cx = O.x + O.s / 2, cy = O.y + O.s / 2;
@@ -517,15 +676,25 @@
         tags.push(() => {
           const s = R.S(c.x, c.y, 150);
           if (q > 0) R.pill(s.x, s.y, '?', q, { size: 40, anchorBottom: true, fill: PAL().mustard });
-          else if (show > 0 && t > qb) R.pill(s.x, s.y, NAMES[k], show, { size: 32, anchorBottom: true });
+          else if (show > 0 && t > qb && t < R.T.w(7, 'Agora') + 0.6) R.pill(s.x, s.y, NAMES[k], show * (1 - prog(t, R.T.w(7, 'Agora'), R.T.w(7, 'Agora') + 0.6)), { size: 32, anchorBottom: true });
         });
       }
     }
     // cano (construído na intro) + PL
     const built = LEN * ease.inOut(prog(t, 0.7, 2.4));
     const pl = plPos(t);
-    addPipe((d, fn) => items.push({ depth: d, fn }), built, pl ? pl.s : 0);
-    if (pl) {
+    const T = R.T;
+    const finale = ease.inOut(prog(t, T.w(7, 'Agora'), T.w(7, 'Agora') + 1.8));
+    addPipe((d, fn) => items.push({ depth: d, fn }), built, Math.max(pl ? pl.s : 0, finale * LEN));
+    // comissões aprovam sem plenário: atalho tracejado da estação 2 para o Senado
+    const by = ease.inOut(prog(t, T.w(3, 'Muitas'), T.w(3, 'plenário') + 0.2));
+    const byOut = 1 - prog(t, T.w(3, 'outros') - 0.1, T.w(3, 'outros') + 0.4);
+    if (by > 0 && byOut > 0) {
+      const A = P(ISL.s2.x + 250, ISL.s2.y + 200, 90), Bp = P(ISL.s4.x + 100, ISL.s4.y + 40, 90);
+      items.push({ depth: 2e6, fn: () => dashArc(A, Bp, { X: 520, Y: -60 }, by, { alpha: byOut, color: PAL().mustard, w: 9 }) });
+      tags.push(() => { const s = R.S(ISL.s3.x + 300, ISL.s3.y + 60, 200); R.pill(s.x + 150, s.y, 'SEM PLENÁRIO', prog(by, 0.5, 0.8) * byOut, { size: 30, fill: PAL().mustard }); });
+    }
+    if (pl && pl.s < MACH.press - 22) {
       const p = at(pl.s), l = lift(pl.s);
       const z = PZ + 8 + l * 40;
       items.push({

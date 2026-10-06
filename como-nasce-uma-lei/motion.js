@@ -94,6 +94,36 @@
     ctx.letterSpacing = '0px';
   }
 
+  // fechamento: mesmo padrão do título, sobre a maquete inteira acesa
+  function drawOutro(t) {
+    const t0 = R.T.w(7, 'Agora') + 0.9;
+    const a = prog(t, t0, t0 + 0.5);
+    if (a <= 0) return;
+    R.screen();
+    ctx.save();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.globalAlpha = clamp(a * 2);
+    ctx.font = '600 30px Inter'; ctx.letterSpacing = '3px';
+    ctx.fillStyle = 'rgba(240,233,216,0.72)';
+    ctx.fillText('AGORA VOCÊ SABE', 120, 300);
+    ctx.font = '400 98px Anton'; ctx.letterSpacing = '1px';
+    ['COMO UMA IDEIA', 'VIRA LEI.'].forEach((line, i) => {
+      const p = ease.outQuint(prog(t, t0 + 0.08 + i * 0.14, t0 + 0.7 + i * 0.14));
+      const y = 367 + i * 108;
+      ctx.save(); ctx.beginPath(); ctx.rect(100, y - 6, 820, 112); ctx.clip();
+      ctx.globalAlpha = 1; ctx.fillStyle = R.PAL.paper;
+      ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
+      ctx.fillText(line, 120, y + (1 - p) * 112);
+      ctx.restore();
+    });
+    ctx.fillStyle = R.PAL.paper; ctx.globalAlpha = 1;
+    ctx.fillRect(122, 367 + 216 + 12, 92 * ease.inOut(prog(t, t0 + 0.6, t0 + 1.1)), 3);
+    ctx.restore();
+    ctx.letterSpacing = '0px';
+    const c = prog(t, R.T.w(7, 'Salva'), R.T.w(7, 'Salva') + 0.3);
+    if (c > 0) R.pill(498, 1190, 'SALVA E MANDA PRA ALGUÉM', c, { size: 30, fill: R.PAL.mustard });
+  }
+
   // assinatura fixa: canto superior direito da área segura (x ≤ 900, y ≥ 288).
   // Uma família só (Inter), selo com contorno fino e um ponto que pulsa.
   function drawHandle(t) {
@@ -174,6 +204,7 @@
 
     for (const fn of tags) fn();
     drawTitle(t);
+    drawOutro(t);
     if (R.CAPTIONS) R.drawCaptions(t);
     drawHandle(t);
 
