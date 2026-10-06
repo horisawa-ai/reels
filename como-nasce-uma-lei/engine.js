@@ -53,7 +53,7 @@
   R.screen = () => ctx.setTransform(1, 0, 0, 1, 0, 0);
 
   // ---------- primitivas
-  const LW = 3.4;
+  const LW = 2.4;
   function ink(w = LW) {
     ctx.lineWidth = w; ctx.strokeStyle = R.PAL.line; ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   }

@@ -1,28 +1,32 @@
-// Paleta (provisória, neutra). Para trocar o visual inteiro, edite só este arquivo.
+// Paleta do guia visual (Maquetes Reels): carvão, verde profundo, verde acinzentado, papel creme.
+// Para trocar o visual inteiro, edite só este arquivo.
 window.R = window.R || {};
 window.R.PAL = {
-  bg: '#ECE7DE',          // fundo (mesa da maquete)
-  grid: 'rgba(43,42,46,0.055)',
-  line: '#2B2A2E',        // contorno de tudo
-  slab: '#DED6C8',        // ilhas da maquete
-  paper: '#FBFAF6',
-  ink: '#2B2A2E',
-  stone: '#D3CBBD',
-  sand: '#E7DDC9',
-  wood: '#C7B496',
-  gray: '#A69E91',
-  dark: '#5C5751',
-  skin: '#E6CDB2',
-  sage: '#9DB59B',
-  mustard: '#E2B85C',
-  terracotta: '#CF8C70',
-  slate: '#8FA3B5',
-  lilac: '#B3A6BF',
-  lampOff: '#CFC6B6',
-  lampOn: '#F3C552',
-  glow: '243,197,82',     // rgb do brilho das lâmpadas
-  pipe: '#F4F0E8',
-  pipeLit: '#F3C552',
-  ok: '#7FAF7C',
-  no: '#D27561',
+  bg: '#101513',          // carvão
+  bgLight: '#1B2420',     // luz de estúdio no centro
+  grid: 'rgba(240,233,216,0.03)',
+  line: '#090C0B',        // arestas da maquete
+  slab: '#183C2C',        // verde profundo (bases)
+  paper: '#F0E9D8',       // papel creme
+  ink: '#101513',
+  stone: '#BDB6A6',       // concreto claro
+  sand: '#D9D0BC',
+  wood: '#7E6C57',
+  gray: '#6F7672',
+  dark: '#29302D',
+  skin: '#D6C1A5',
+  sage: '#506256',        // verde acinzentado
+  mustard: '#E6D3A0',     // luz quente (destaques e lâmpadas)
+  terracotta: '#9C7F6A',
+  slate: '#5D6E6C',
+  lilac: '#7B7A82',
+  tree: '#2F5641',
+  water: '#0D221A',
+  lampOff: '#39433E',
+  lampOn: '#F2DDA4',
+  glow: '242,221,164',
+  pipe: '#D6CFBF',
+  pipeLit: '#F2DDA4',
+  ok: '#7FA58A',
+  no: '#B4806E',
 };

@@ -4,6 +4,8 @@
   const { clamp, lerp, prog, ease, rng } = R.U;
   const ctx = R.ctx, W = R.W, H = R.H;
   let flagTex, keys, grain = [];
+  const VARIANT = (new URLSearchParams(location.search).get('v') || 'A').toUpperCase();
+  R.CAPTIONS = new URLSearchParams(location.search).has('legenda'); // legenda desligada por padrão
 
   // ---------- câmera a partir dos keyframes de timeline.js
   function camera(t) {
@@ -56,62 +58,134 @@
     ctx.stroke();
   }
 
+  // título do guia: rótulo Inter 30px em y=314, Anton em duas linhas a partir de y=367 (x=120)
   function drawTitle(t) {
-    const a = prog(t, 0.35, 0.9), out = prog(t, R.INTRO_END + 0.2, R.INTRO_END + 0.8);
+    const tin = VARIANT === 'B' ? 0.6 : 0.3;
+    const tout = VARIANT === 'B' ? R.HERO.END - 0.7 : R.INTRO_END + 0.25;
+    const a = prog(t, tin, tin + 0.5), out = prog(t, tout, tout + 0.5);
     if (a <= 0 || out >= 1) return;
     R.screen();
     ctx.save();
-    ctx.globalAlpha = 1 - out;
-    ctx.translate(0, -ease.in(out) * 120);
-    ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
-    ctx.font = '900 96px Inter'; ctx.letterSpacing = '-2px';
-    const l1 = 'COMO NASCE', l2 = 'UMA LEI';
-    const e1 = ease.outQuint(a), e2 = ease.outQuint(prog(t, 0.5, 1.05));
-    ctx.fillStyle = R.PAL.ink;
-    ctx.globalAlpha = (1 - out) * clamp(a * 2);
-    ctx.fillText(l1, 540, 300 + (1 - e1) * 60);
-    // faixa marca-texto atrás de "UMA LEI"
-    const w2 = ctx.measureText(l2).width;
-    const hb = ease.inOut(prog(t, 0.75, 1.25));
-    ctx.fillStyle = R.PAL.mustard;
-    ctx.beginPath(); ctx.roundRect(540 - w2 / 2 - 22, 336, (w2 + 44) * hb, 104, 14); ctx.fill();
-    ctx.globalAlpha = (1 - out) * clamp(prog(t, 0.5, 0.8) * 2);
-    ctx.fillStyle = R.PAL.ink;
-    ctx.fillText(l2, 540, 420 + (1 - e2) * 60);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    // rótulo
+    ctx.globalAlpha = clamp(a * 2) * (1 - out);
+    ctx.font = '600 30px Inter'; ctx.letterSpacing = '3px';
+    ctx.fillStyle = 'rgba(240,233,216,0.72)';
+    ctx.fillText('COMO FUNCIONA', 120, 300 - ease.in(out) * 20);
+    // linhas do título, reveladas por máscara
+    ctx.font = '400 98px Anton'; ctx.letterSpacing = '1px';
+    ['COMO UMA IDEIA', 'VIRA LEI?'].forEach((line, i) => {
+      const p = ease.outQuint(prog(t, tin + 0.08 + i * 0.14, tin + 0.7 + i * 0.14));
+      const q = ease.in(prog(t, tout + i * 0.06, tout + 0.45 + i * 0.06));
+      const y = 367 + i * 108;
+      ctx.save();
+      ctx.beginPath(); ctx.rect(100, y - 6, 820, 112); ctx.clip();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = R.PAL.paper;
+      ctx.shadowColor = 'rgba(0,0,0,0.55)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 6;
+      ctx.fillText(line, 120, y + (1 - p) * 112 - q * 112);
+      ctx.restore();
+    });
+    // filete
+    const r = ease.inOut(prog(t, tin + 0.6, tin + 1.1)) * (1 - ease.in(out));
+    ctx.fillStyle = R.PAL.paper; ctx.globalAlpha = 1;
+    ctx.fillRect(122, 367 + 216 + 12, 92 * r, 3);
     ctx.restore();
     ctx.letterSpacing = '0px';
-    const c = prog(t, 1.2, 1.5);
-    if (c > 0) R.pill(540, 505, 'EM 2 MINUTOS', c * (1 - out), { size: 30 });
+  }
+
+  // assinatura fixa: canto superior direito da área segura (x ≤ 900, y ≥ 288)
+  function drawHandle(t) {
+    R.screen();
+    ctx.save();
+    ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left';
+    ctx.font = '400 41px Anton'; ctx.letterSpacing = '2px';
+    const w1 = ctx.measureText('pulsar').width;
+    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
+    const w0 = ctx.measureText('@').width, w2 = ctx.measureText('.science').width;
+    const right = 900, base = 326;
+    let x = right - (w0 + 4 + w1 + 3 + w2);
+    // pulsar: núcleo + ondas
+    const cx = x - 26, cy = base - 13;
+    for (let k = 0; k < 2; k++) {
+      const ph = ((t * 0.7 + k * 0.5) % 1);
+      ctx.strokeStyle = `rgba(240,233,216,${0.5 * (1 - ph)})`; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.arc(cx, cy, 5 + ph * 15, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.fillStyle = R.PAL.paper; ctx.beginPath(); ctx.arc(cx, cy, 4.2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = 'rgba(240,233,216,0.6)';
+    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
+    ctx.fillText('@', x, base - 2); x += w0 + 4;
+    ctx.fillStyle = R.PAL.paper;
+    ctx.font = '400 41px Anton'; ctx.letterSpacing = '2px';
+    ctx.fillText('pulsar', x, base); x += w1 + 3;
+    ctx.fillStyle = '#9DB0A3';
+    ctx.font = '500 23px "IBM Plex Mono"'; ctx.letterSpacing = '1px';
+    ctx.fillText('.science', x, base - 2);
+    ctx.restore();
+    ctx.letterSpacing = '0px';
+  }
+
+  // lente macro: desfoca topo e base (efeito miniatura)
+  let tsSmall, tsBlur, tsMask;
+  function tiltShift() {
+    if (!tsSmall) {
+      tsSmall = document.createElement('canvas'); tsSmall.width = 270; tsSmall.height = 480;
+      tsBlur = document.createElement('canvas'); tsBlur.width = 270; tsBlur.height = 480;
+      tsMask = document.createElement('canvas'); tsMask.width = W; tsMask.height = H;
+    }
+    const s = tsSmall.getContext('2d'), b = tsBlur.getContext('2d'), m = tsMask.getContext('2d');
+    s.clearRect(0, 0, 270, 480); s.drawImage(R.canvas, 0, 0, 270, 480);
+    b.clearRect(0, 0, 270, 480); b.filter = 'blur(2.6px)'; b.drawImage(tsSmall, 0, 0); b.filter = 'none';
+    m.globalCompositeOperation = 'source-over'; m.clearRect(0, 0, W, H);
+    m.imageSmoothingQuality = 'high'; m.drawImage(tsBlur, 0, 0, W, H);
+    m.globalCompositeOperation = 'destination-in';
+    const g = m.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(0.3, 'rgba(0,0,0,0)');
+    g.addColorStop(0.62, 'rgba(0,0,0,0)'); g.addColorStop(0.92, 'rgba(0,0,0,1)');
+    m.fillStyle = g; m.fillRect(0, 0, W, H);
+    R.screen(); ctx.drawImage(tsMask, 0, 0);
   }
 
   function render(t) {
     t = clamp(t, 0, R.DURATION);
-    camera(t);
+    const hero = VARIANT === 'B' && t < R.HERO.END;
+    if (hero) R.heroCamera(t); else camera(t);
     R.screen();
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     ctx.fillStyle = R.PAL.bg; ctx.fillRect(0, 0, W, H);
+    const spot = ctx.createRadialGradient(W / 2, H * 0.52, 60, W / 2, H * 0.52, H * 0.62);
+    spot.addColorStop(0, R.PAL.bgLight); spot.addColorStop(1, R.PAL.bg);
+    ctx.fillStyle = spot; ctx.fillRect(0, 0, W, H);
     drawGrid();
 
-    const scene = R.buildScene(t);
-    R.world();
-    for (const fn of scene.slabs) fn();
-    scene.items.sort((a, b) => a.depth - b.depth);
-    for (const it of scene.items) it.fn();
+    let tags = [];
+    if (hero) R.drawHero(t);
+    else {
+      const scene = R.buildScene(t);
+      R.world();
+      for (const fn of scene.slabs) fn();
+      scene.items.sort((a, b) => a.depth - b.depth);
+      for (const it of scene.items) it.fn();
+      tags = scene.tags;
+    }
+    tiltShift();
 
+    // luz de estúdio + vinheta
     R.screen();
-    for (const fn of scene.tags) fn();
-    drawTitle(t);
-    R.drawCaptions(t);
-
-    // papel + vinheta leve
-    R.screen();
-    ctx.globalAlpha = 0.55;
+    const v = ctx.createRadialGradient(W / 2, H * 0.5, H * 0.25, W / 2, H * 0.5, H * 0.75);
+    v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,0.62)');
+    ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+    ctx.globalAlpha = 0.5;
     ctx.drawImage(grain[Math.floor(t * 30) % 3], 0, 0, W, H);
     ctx.globalAlpha = 1;
-    const v = ctx.createRadialGradient(W / 2, H / 2, H * 0.35, W / 2, H / 2, H * 0.8);
-    v.addColorStop(0, 'rgba(60,50,40,0)'); v.addColorStop(1, 'rgba(60,50,40,0.18)');
-    ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
-    const fin = 1 - prog(t, 0, 0.2);
+
+    for (const fn of tags) fn();
+    drawTitle(t);
+    if (R.CAPTIONS) R.drawCaptions(t);
+    drawHandle(t);
+
+    const fin = 1 - prog(t, 0, 0.25);
     if (fin > 0) { ctx.fillStyle = R.PAL.bg; ctx.globalAlpha = fin; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1; }
   }
 
@@ -122,13 +196,13 @@
     await img.decode();
     flagTex = document.createElement('canvas'); flagTex.width = 700; flagTex.height = 490;
     flagTex.getContext('2d').drawImage(img, 0, 0, 700, 490);
-    await Promise.all(['900 90px Inter', '800 30px Inter', '700 40px Inter'].map(f => document.fonts.load(f)));
+    await Promise.all(['900 90px Inter', '800 30px Inter', '600 30px Inter', '700 40px Inter', '400 98px Anton', '500 23px "IBM Plex Mono"'].map(f => document.fonts.load(f)));
     keys = R.cameraKeys().sort((a, b) => a.t - b.t);
     const r = rng(5);
     for (let n = 0; n < 3; n++) {
       const cv = document.createElement('canvas'); cv.width = 540; cv.height = 960;
       const g = cv.getContext('2d'); const im = g.createImageData(540, 960);
-      for (let i = 0; i < im.data.length; i += 4) { const v = 90 + r() * 120; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 14; }
+      for (let i = 0; i < im.data.length; i += 4) { const v = 60 + r() * 140; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 14; }
       g.putImageData(im, 0, 0); grain.push(cv);
     }
   }

@@ -430,6 +430,43 @@
   }
   const STATIONS = { vote: stVote, s1: stS1, s2: stS2, s3: stS3, s4: stS4, s5: stS5, s6: stS6 };
 
+  // base de maquete: sombra suave no chão + bloco verde com textura de pedra
+  let stoneTex = null;
+  function stonePattern() {
+    if (stoneTex) return stoneTex;
+    const cv = document.createElement('canvas'); cv.width = cv.height = 256;
+    const g = cv.getContext('2d'), r = rng(11);
+    for (let i = 0; i < 2600; i++) {
+      g.fillStyle = r() < 0.5 ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.08)';
+      g.fillRect(r() * 256, r() * 256, 1 + r() * 2, 1 + r() * 2);
+    }
+    g.strokeStyle = 'rgba(240,233,216,0.06)'; g.lineWidth = 1.2;
+    for (let i = 0; i < 5; i++) {
+      g.beginPath(); let x = r() * 256, y = 0; g.moveTo(x, y);
+      while (y < 256) { x += (r() - 0.5) * 30; y += 12 + r() * 20; g.lineTo(x, y); }
+      g.stroke();
+    }
+    stoneTex = ctx.createPattern(cv, 'repeat');
+    return stoneTex;
+  }
+  function drawBase(x, y, z, w, d, h, color) {
+    const c = [P(x, y + d, z), P(x + w, y + d, z), P(x + w, y, z)];
+    ctx.save();
+    ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26;
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.beginPath(); ctx.moveTo(c[0].X, c[0].Y); ctx.lineTo(c[1].X, c[1].Y); ctx.lineTo(c[2].X, c[2].Y);
+    const b = P(x, y, z); ctx.lineTo(b.X, b.Y); ctx.closePath(); ctx.fill();
+    ctx.restore();
+    D.box(x, y, z, w, d, h, color || PAL().slab);
+    D.onFace('top', x, y, z + h, g => {
+      g.fillStyle = stonePattern(); g.fillRect(0, 0, w, d);
+      g.strokeStyle = 'rgba(240,233,216,0.07)'; g.lineWidth = 2; g.strokeRect(8, 8, w - 16, d - 16);
+    });
+    D.onFace('left', x, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, w, h); });
+    D.onFace('right', x + w, y + d, z + h, g => { g.fillStyle = stonePattern(); g.globalAlpha = 0.6; g.fillRect(0, 0, d, h); });
+  }
+  R.drawBase = drawBase;
+
   function glowAt(c, a) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     const g = ctx.createRadialGradient(c.X, c.Y, 0, c.X, c.Y, 60);
@@ -455,13 +492,7 @@
         if (s < 0.999) { ctx.save(); ctx.translate(pv.X, pv.Y); ctx.scale(s, s); ctx.translate(-pv.X, -pv.Y); fn(); ctx.restore(); }
         else fn();
       };
-      slabs.push(wrap(() => {
-        const c = [P(I.x, I.y + I.s, 0), P(I.x + I.s, I.y + I.s, 0), P(I.x + I.s, I.y, 0)];
-        ctx.fillStyle = 'rgba(43,42,46,0.08)';
-        ctx.beginPath(); ctx.moveTo(c[0].X - 10, c[0].Y + 14); ctx.lineTo(c[1].X, c[1].Y + 26); ctx.lineTo(c[2].X + 10, c[2].Y + 14); ctx.lineTo(c[2].X, c[2].Y); ctx.lineTo(c[1].X, c[1].Y); ctx.lineTo(c[0].X, c[0].Y); ctx.fill();
-        D.box(I.x, I.y, 0, I.s, I.s, SLAB, PAL().slab);
-        D.onFace('top', I.x, I.y, SLAB, g => { g.strokeStyle = 'rgba(43,42,46,0.08)'; g.lineWidth = 2; g.strokeRect(10, 10, I.s - 20, I.s - 20); });
-      }));
+      slabs.push(wrap(() => drawBase(I.x, I.y, 0, I.s, I.s, SLAB)));
       let n = 0;
       const add = (depth, fn) => { const extra = 0.04 * (n++ % 6); items.push({ depth, fn: wrap(fn, extra) }); };
       STATIONS[k](t, add, ov, I, tags);
