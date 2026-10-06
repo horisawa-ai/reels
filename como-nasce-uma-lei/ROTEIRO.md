@@ -2,7 +2,8 @@
 
 | Tempo | Narração |
 |---|---|
-| 0–5s | Você sabe o caminho que uma lei faz até chegar na sua vida? Em 2 minutos eu te mostro. |
+| 0–2,6s | *(intro sem narração: a maquete se monta e entra o título)* |
+| 2,6–14s | Todo mundo vota pra deputado, senador, presidente… Mas pouca gente sabe como as coisas funcionam lá dentro. Você sabe o que é preciso pra uma lei sair do papel? Vem que eu te mostro. |
 | 5–20s | Tudo começa com um projeto de lei. Quem pode propor? Deputados, senadores, o Presidente, o STF, tribunais superiores, a Procuradoria-Geral… e até você: com a assinatura de 1% dos eleitores, em pelo menos 5 estados. |
 | 20–40s | Se o projeto vem de fora do Congresso, ele começa pela Câmara dos Deputados. Lá, passa pelas comissões: um relator estuda, dá parecer, propõe mudanças. E a CCJ confere se ele respeita a Constituição. |
 | 40–55s | Muitas vezes as próprias comissões já dão a palavra final. Em outros casos, vai ao plenário: lá precisa da maioria dos votos, com pelo menos metade dos 513 deputados presentes. |
@@ -11,6 +12,9 @@
 | 95–110s | Por fim, a lei é promulgada e publicada no Diário Oficial. Só então passa a valer: na data que o próprio texto diz ou, se ele não disser nada, 45 dias depois. |
 | 110–120s | Agora você sabe o caminho de uma lei. Salva esse vídeo e manda para quem precisa entender isso. |
 
+## Visual
+Maquete isométrica contínua: cada etapa é uma estação ligada por um cano por onde o Projeto de Lei corre. Zoom in na estação → zoom out para o todo → zoom in na próxima. Tom 100% neutro: só o processo previsto na Constituição.
+
 ## Como rodar
 - Prévia: abrir `index.html` no navegador (espaço = play/pausa).
-- Vídeo: `node render.mjs --out out/abertura.mp4` (opcional `--audio narracao.mp3`).
+- Vídeo: `node render.mjs --out out/reels.mp4` (opcional `--audio narracao.mp3`).
