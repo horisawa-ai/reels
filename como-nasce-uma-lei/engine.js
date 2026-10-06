@@ -63,7 +63,7 @@
     soft: { lw: 0, grad: true, rim: true, shadow: true, pattern: false, gloss: true, bright: 1.1, soft: 1.8 },
     flat: { lw: 0, grad: false, rim: true, shadow: 'long', pattern: false, sides: [0.82, 0.62] },
   };
-  R.STYLE_NAME = new URLSearchParams(location.search).get('s') || 'line';
+  R.STYLE_NAME = new URLSearchParams(location.search).get('s') || 'flat'; // escolhido: flat geométrico
   R.STYLE = STYLES[R.STYLE_NAME] || STYLES.line;
 
   // ---------- primitivas
