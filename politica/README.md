@@ -9,7 +9,7 @@ Câmara e do Senado) antes de gravar.
 
 | # | Reels | Status | Pasta |
 |---|---|---|---|
-| 1 | **Como uma ideia vira lei?** O caminho de um projeto de lei, da proposta até o Diário Oficial. | Pronto (1min57) | [`como-nasce-uma-lei/`](como-nasce-uma-lei/) |
+| 1 | **Como uma ideia vira lei?** O caminho de um projeto de lei, da proposta até o Diário Oficial. | Pronto (1min34) | [`como-nasce-uma-lei/`](como-nasce-uma-lei/) |
 
 <img src="como-nasce-uma-lei/capa.png" width="270" alt="Capa: Como uma ideia vira lei?">
 
@@ -38,8 +38,8 @@ Câmara e do Senado) antes de gravar.
 ## Como um episódio é feito
 
 1. Roteiro de até ~290 palavras, conferido artigo por artigo (fontes no `ROTEIRO.md` de cada pasta).
-2. Aprovação do texto e gravação da narração.
-3. Limpeza do áudio (retomadas cortadas) e sincronia da animação com a fala.
+2. Aprovação do texto e geração da narração (voz IA).
+3. Ajuste do áudio (pausas encurtadas, ritmo acelerado) e sincronia da animação com a fala.
 4. Desenho de som (`som/`) e render final (`render.mjs`).
 
 Os vídeos finais e a voz gravada **não** ficam neste repositório (ele é público); só o código, o roteiro e a capa.
