@@ -619,7 +619,10 @@
     stoneTex = ctx.createPattern(cv, 'repeat');
     return stoneTex;
   }
+  // visual 2 (padrão; ?look=1 volta ao anterior): pedestal de maquete, filete creme e árvores
+  const LOOK2 = R.LOOK2 = new URLSearchParams(location.search).get('look') !== '1';
   function drawBase(x, y, z, w, d, h, color) {
+    if (LOOK2) { z -= 46; }
     const c = [P(x, y + d, z), P(x + w, y + d, z), P(x + w, y, z)];
     ctx.save();
     ctx.shadowColor = 'rgba(0,0,0,0.6)'; ctx.shadowBlur = 50; ctx.shadowOffsetY = 26;
@@ -627,6 +630,20 @@
     ctx.beginPath(); ctx.moveTo(c[0].X, c[0].Y); ctx.lineTo(c[1].X, c[1].Y); ctx.lineTo(c[2].X, c[2].Y);
     const b = P(x, y, z); ctx.lineTo(b.X, b.Y); ctx.closePath(); ctx.fill();
     ctx.restore();
+    if (LOOK2) {
+      D.box(x, y, z, w, d, 46, '#26302B', { noShadow: true });
+      // filete creme entre o pedestal e a bandeja
+      D.box(x - 3, y - 3, 0, w + 6, d + 6, 4, R.shade(PAL().paper, 0.86), { noShadow: true });
+      z = 4; h -= 4;
+      D.box(x, y, z, w, d, h, color || PAL().slab, { noShadow: true });
+      D.onFace('top', x, y, z + h, g => {
+        const gr = g.createLinearGradient(0, 0, w, d);
+        gr.addColorStop(0, 'rgba(255,250,236,0.07)'); gr.addColorStop(1, 'rgba(0,0,0,0.10)');
+        g.fillStyle = gr; g.fillRect(0, 0, w, d);
+        g.strokeStyle = 'rgba(240,233,216,0.10)'; g.lineWidth = 2; g.strokeRect(12, 12, w - 24, d - 24);
+      });
+      return;
+    }
     D.box(x, y, z, w, d, h, color || PAL().slab, { noShadow: true });
     D.onFace('top', x, y, z + h, g => {
       if (R.STYLE.pattern) { g.fillStyle = stonePattern(); g.fillRect(0, 0, w, d); }
@@ -638,6 +655,24 @@
     }
   }
   R.drawBase = drawBase;
+
+  function tree(x, y, z, k) {
+    D.cyl(x, y, z, 2.6 * k, 9 * k, R.shade(PAL().wood, 0.8));
+    D.sphere(x + 3 * k, y - 2 * k, z + 13 * k, 7.5 * k, R.shade(PAL().tree, 1.0));
+    D.sphere(x, y, z + 17 * k, 9 * k, R.shade(PAL().tree, 1.18));
+    D.sphere(x - 2.5 * k, y + 2 * k, z + 23 * k, 6 * k, R.shade(PAL().tree, 1.42));
+  }
+  R.tree = tree;
+  // posições (u, v em 0..1 da ilha, escala)
+  const DECOR = R.DECOR = {
+    vote: [[0.9, 0.08, 1], [0.08, 0.9, 0.9]],
+    s1: [[0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+    s2: [[0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+    s3: [[0.07, 0.07, 1.1], [0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+    s4: [[0.07, 0.07, 1.1], [0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+    s5: [[0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+    s6: [[0.07, 0.07, 1.1], [0.93, 0.07, 1], [0.07, 0.93, 0.9]],
+  };
 
   function glowAt(c, a) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
@@ -668,6 +703,10 @@
       let n = 0;
       const add = (depth, fn) => { const extra = 0.04 * (n++ % 6); items.push({ depth, fn: wrap(fn, extra) }); };
       STATIONS[k](t, add, ov, I, tags);
+      if (LOOK2) for (const [u, v, sc] of DECOR[k] || []) {
+        const tx = I.x + u * I.s, ty = I.y + v * I.s;
+        add(tx + ty, () => tree(tx, ty, SLAB, 1.5 * sc));
+      }
       if (NAMES[k]) {
         const show = ov * clamp(prog(t, R.INTRO_END + 2, R.INTRO_END + 2.5));
         const qa = R.T.w(0, 'Mas'), qb = R.T.w(0, 'Vem');
