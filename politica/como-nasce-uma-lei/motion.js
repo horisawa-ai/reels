@@ -129,7 +129,7 @@
   function drawHandle(t) {
     R.screen();
     ctx.save();
-    const label = '@plenarinhodecente';
+    const label = '@plenarinho.decente';
     ctx.font = '600 25px Inter'; ctx.letterSpacing = '0.6px';
     const tw = ctx.measureText(label).width;
     const h = 46, padL = 40, padR = 20, w = padL + tw + padR;

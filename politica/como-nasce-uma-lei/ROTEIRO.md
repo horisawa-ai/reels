@@ -3,7 +3,7 @@
 Tom 100% neutro: só o processo previsto na Constituição (lei federal ordinária), sem partidos nem pessoas.
 Visual: maquete contínua (zoom in na estação → zoom out para o todo → zoom in na próxima), paleta e fontes do
 guia "Maquetes Reels" (carvão, verde profundo, verde acinzentado, papel creme; Anton, Inter, IBM Plex Mono).
-Assinatura `@plenarinhodecente` fixa no canto superior direito da área segura durante todo o vídeo.
+Assinatura `@plenarinho.decente` fixa no canto superior direito da área segura durante todo o vídeo.
 
 ## Narração (para gravar) — versão conferida
 
