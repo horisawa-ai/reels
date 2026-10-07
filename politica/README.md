@@ -1,6 +1,6 @@
 # Política em 2 minutos
 
-Série de Reels do **@pulsar.science** que explica como a política brasileira funciona, em até 2 minutos,
+Série de Reels do **@plenarinhodecente** que explica como a política brasileira funciona, em até 2 minutos,
 com uma maquete animada. **Tom 100% neutro:** mostra só as regras e os processos, sem partidos, sem
 pessoas e sem tomar lado. Cada informação é conferida na fonte oficial (Constituição, leis e sites da
 Câmara e do Senado) antes de gravar.
@@ -31,7 +31,7 @@ Câmara e do Senado) antes de gravar.
   acabamento "flat geométrico" com sombras longas.
 - **Paleta:** carvão `#101513`, verde profundo `#183C2C`, verde acinzentado `#506256`, papel creme `#F0E9D8`.
 - **Tipografia:** Anton (títulos), Inter (apoio e balões), IBM Plex Mono (números).
-- **Área segura:** textos entre x 96–900 e y 288–1248; `@pulsar.science` fixo no canto superior direito dessa área.
+- **Área segura:** textos entre x 96–900 e y 288–1248; `@plenarinhodecente` fixo no canto superior direito dessa área.
 - **Balões:** um por vez na tela.
 - **Som:** trilha sintetizada (sem direitos autorais), efeitos sincronizados com a animação, música abaixada sob a voz, −14 LUFS.
 
