@@ -280,7 +280,7 @@
       add(hx + hy - 2, () => person(hx, hy, SLAB, color));
       tags.push(() => {
         const a = clamp(1 - prog(t, tw + 2.1, tw + 2.5));
-        if (on > 0 && a > 0) { const s = R.S(hx, hy, SLAB + 60); R.pill(s.x, s.y, lab, on, { anchorBottom: true, size: 29, alpha: a }); }
+        if (on > 0 && a > 0) { const s = R.S(hx, hy, SLAB + 60); R.pill(s.x, s.y, lab, on, { at: tw, anchorBottom: true, size: 29, alpha: a }); }
       });
       // folha voando da mesa para o funil
       const fp = prog(t, tw + 0.1, tw + 0.85);
@@ -303,7 +303,7 @@
     if (show > 0 && drop < 1) {
       const z = SLAB + 190 + Math.sin(t * 2.4) * 8 - drop * 110;
       add(fx + fy + 300, () => { const c = P(fx, fy, z); D.sheet(c.X, c.Y, lerp(0.4, 1.6, ease.back(show)) * (1 - drop * 0.6), Math.sin(t * 2) * 0.08, { tag: 'PL', glow: 1 - drop }); });
-      tags.push(() => { const s = R.S(fx, fy, SLAB + 290); R.pill(s.x, s.y, 'PROJETO DE LEI', show * (1 - drop), { anchorBottom: true, size: 29 }); });
+      tags.push(() => { const s = R.S(fx, fy, SLAB + 290); R.pill(s.x, s.y, 'PROJETO DE LEI', show * (1 - drop), { at: a0, anchorBottom: true, size: 29 }); });
     }
   }
 
@@ -316,7 +316,7 @@
       for (let i = 0; i < 4; i++) D.lamp(O.x + 36 + i * 26, O.y + 280, SLAB + 18, cOn > 0 && t > T.w(2, 'Câmara') + i * 0.08 ? 1 : 0, 4.5);
       D.frustum(O.x + 75, O.y + 225, SLAB + 34, 30, 64, 34, PAL().paper, { hollow: true, bulge: 10 });
     });
-    tags.push(() => { const s = R.S(O.x + 75, O.y + 225, SLAB + 110); R.pill(s.x, s.y, 'CÂMARA DOS DEPUTADOS', cOn * (1 - prog(t, T.w(2, 'comissões'), T.w(2, 'comissões') + 0.4)), { anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(O.x + 75, O.y + 225, SLAB + 110); R.pill(s.x, s.y, 'CÂMARA DOS DEPUTADOS', cOn * (1 - prog(t, T.w(2, 'comissões'), T.w(2, 'comissões') + 0.4)), { at: T.w(2, 'Câmara'), anchorBottom: true, size: 29 }); });
 
     const pl = R.PIPE.plPos(t);
     const plAt = m => (pl && Math.abs(pl.s - m) < 3 ? 1 : 0);
@@ -334,8 +334,8 @@
       D.lamp(rx + 42, ry + 4, SLAB + 36, prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.2), 4.5);
     });
     add(rx + ry + 10, () => person(rx + 20, ry - 18, SLAB, PAL().slate));
-    tags.push(() => { const s = R.S(rx + 20, ry - 18, SLAB + 64); R.pill(s.x, s.y, 'RELATOR', prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { anchorBottom: true, size: 29 }); });
-    tags.push(() => { const s = R.S(rx + 60, ry + 40, SLAB + 120); R.pill(s.x, s.y, 'PARECER', prog(t, T.w(2, 'parecer'), T.w(2, 'parecer') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { anchorBottom: true, size: 29, fill: PAL().sage }); });
+    tags.push(() => { const s = R.S(rx + 20, ry - 18, SLAB + 64); R.pill(s.x, s.y, 'RELATOR', prog(t, T.w(2, 'relator'), T.w(2, 'relator') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { at: T.w(2, 'relator'), anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(rx + 60, ry + 40, SLAB + 120); R.pill(s.x, s.y, 'PARECER', prog(t, T.w(2, 'parecer'), T.w(2, 'parecer') + 0.3) * (1 - prog(t, T.w(2, 'propor') + 0.3, T.w(2, 'propor') + 0.6)), { at: T.w(2, 'parecer'), anchorBottom: true, size: 29, fill: PAL().sage }); });
 
     // Emendas: prensa de carimbo
     const ex = O.x + 120, ey = O.y + 70;
@@ -348,7 +348,7 @@
       D.box(ex - 2, ey - 2, SLAB + 80 - press * 30, 44, 44, 12, PAL().slate);
       D.onFace('left', ex - 2, ey + 42, SLAB + 92 - press * 30, g => { g.fillStyle = PAL().paper; g.font = '800 7.5px Inter'; g.fillText('EMENDAS', 6, 9); });
     });
-    tags.push(() => { const s = R.S(ex + 20, ey + 20, SLAB + 130); R.pill(s.x, s.y, 'MUDANÇAS', prog(t, m0, m0 + 0.3) * (1 - prog(t, T.w(2, 'CCJ') - 0.4, T.w(2, 'CCJ'))), { anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(ex + 20, ey + 20, SLAB + 130); R.pill(s.x, s.y, 'MUDANÇAS', prog(t, m0, m0 + 0.3) * (1 - prog(t, T.w(2, 'CCJ') - 0.4, T.w(2, 'CCJ'))), { at: m0, anchorBottom: true, size: 29 }); });
 
     // CCJ: caixa sobre o cano + balança + Constituição
     const cx = O.x + 188, cy = O.y + 148;
@@ -383,8 +383,8 @@
       D.onFace('top', kx, ky, SLAB + 14, g => { g.fillStyle = PAL().paper; g.font = '900 10px Inter'; g.fillText('CF/88', 7, 20); });
       if (kOn > 0) glowAt(P(kx + 22, ky + 16, SLAB + 20), pulse(t, c1, c1 + 1.6));
     });
-    tags.push(() => { const s = R.S(cx + 22, cy + 22, SLAB + 120); R.pill(s.x, s.y, 'CCJ: RESPEITA A CONSTITUIÇÃO?', prog(t, c0, c0 + 0.3) * (1 - okv), { anchorBottom: true, size: 29 }); });
-    tags.push(() => { const s = R.S(cx + 22, cy + 22, SLAB + 120); R.pill(s.x, s.y, 'CONSTITUCIONAL', okv * (1 - prog(t, R.BEATS[2].end + 0.6, R.BEATS[2].end + 1)), { anchorBottom: true, size: 29, fill: PAL().sage }); });
+    tags.push(() => { const s = R.S(cx + 22, cy + 22, SLAB + 120); R.pill(s.x, s.y, 'CCJ: RESPEITA A CONSTITUIÇÃO?', prog(t, c0, c0 + 0.3) * (1 - okv), { at: c0, anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(cx + 22, cy + 22, SLAB + 120); R.pill(s.x, s.y, 'CONSTITUCIONAL', okv * (1 - prog(t, R.BEATS[2].end + 0.6, R.BEATS[2].end + 1)), { at: c1 + 0.2, anchorBottom: true, size: 29, fill: PAL().sage }); });
     void plAt;
   }
 
@@ -458,8 +458,8 @@
       g.beginPath(); g.arc(12, 60, 4, 0, Math.PI * 2); g.fillStyle = vOn > 0.5 ? PAL().lampOn : PAL().lampOff; g.fill();
       g.fillStyle = PAL().paper; g.font = '600 7.5px Inter'; g.fillText('MAIORIA DOS VOTOS', 21, 63);
     }));
-    tags.push(() => { const s = R.S(mx, my, SLAB + 120); R.pill(s.x, s.y, 'PLENÁRIO', prog(t, arrive, arrive + 0.3) * (1 - prog(t, c0, c0 + 0.3)), { anchorBottom: true, size: 29 }); });
-    tags.push(() => { const s = R.S(O.x + 68, O.y + 252, SLAB + 130); R.pill(s.x, s.y, 'QUÓRUM: 257', prog(t, c1, c1 + 0.3) * (1 - prog(t, R.BEATS[3].end + 0.6, R.BEATS[3].end + 1)), { anchorBottom: true, size: 29, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(mx, my, SLAB + 120); R.pill(s.x, s.y, 'PLENÁRIO', prog(t, arrive, arrive + 0.3) * (1 - prog(t, c0, c0 + 0.3)), { at: arrive, anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(O.x + 68, O.y + 252, SLAB + 130); R.pill(s.x, s.y, 'QUÓRUM: 257', prog(t, c1, c1 + 0.3) * (1 - prog(t, R.BEATS[3].end + 0.6, R.BEATS[3].end + 1)), { at: c1, anchorBottom: true, size: 29, fill: PAL().ok }); });
   }
 
   // 5 · Senado: revisão com três saídas
@@ -478,13 +478,13 @@
     });
     const bx = O.x + 240, by = O.y + 50;
     add(bx + by, () => D.frustum(bx, by, SLAB, 18, 23, 34, PAL().gray, { hollow: true }));
-    tags.push(() => { const s = R.S(O.x + 70, O.y + 200, SLAB + 110); R.pill(s.x, s.y, 'SENADO', prog(t, T.w(4, 'Senado'), T.w(4, 'Senado') + 0.3) * (1 - prog(t, T.w(4, 'aprovar') - 0.2, T.w(4, 'aprovar') + 0.1)), { anchorBottom: true, size: 29 }); });
+    tags.push(() => { const s = R.S(O.x + 70, O.y + 200, SLAB + 110); R.pill(s.x, s.y, 'SENADO', prog(t, T.w(4, 'Senado'), T.w(4, 'Senado') + 0.3) * (1 - prog(t, T.w(4, 'aprovar') - 0.2, T.w(4, 'aprovar') + 0.1)), { at: T.w(4, 'Senado'), anchorBottom: true, size: 29 }); });
     // três desfechos
     const a1 = T.w(4, 'aprovar'), a2 = T.w(4, 'rejeitar'), a3 = T.w(4, 'mudar'), end = R.BEATS[4].end;
     const fade = 1 - prog(t, end + 0.4, end + 0.9);
-    tags.push(() => { const s = R.S(O.x + 170, O.y + 260, SLAB + 40); R.pill(s.x, s.y, 'APROVA → PRESIDENTE', prog(t, a1, a1 + 0.3) * fade, { anchorBottom: true, size: 26, fill: PAL().ok }); });
-    tags.push(() => { const s = R.S(bx, by, SLAB + 90); R.pill(s.x, s.y, 'REJEITA → ARQUIVO', prog(t, a2, a2 + 0.3) * fade, { anchorBottom: true, size: 26 }); });
-    tags.push(() => { const s = R.S(rx - 70, ry - 120, SLAB + 120); R.pill(s.x, s.y, 'MUDOU → VOLTA À CÂMARA', prog(t, a3, a3 + 0.3) * fade, { anchorBottom: true, size: 26, fill: PAL().mustard }); });
+    tags.push(() => { const s = R.S(O.x + 170, O.y + 260, SLAB + 40); R.pill(s.x, s.y, 'APROVA → PRESIDENTE', prog(t, a1, a1 + 0.3) * fade, { at: a1, anchorBottom: true, size: 26, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(bx, by, SLAB + 90); R.pill(s.x, s.y, 'REJEITA → ARQUIVO', prog(t, a2, a2 + 0.3) * fade, { at: a2, anchorBottom: true, size: 26 }); });
+    tags.push(() => { const s = R.S(rx - 70, ry - 120, SLAB + 120); R.pill(s.x, s.y, 'MUDOU → VOLTA À CÂMARA', prog(t, a3, a3 + 0.3) * fade, { at: a3, anchorBottom: true, size: 26, fill: PAL().mustard }); });
     // folha fantasma indo para o arquivo
     const g1 = prog(t, a2 + 0.15, a2 + 1.1);
     if (g1 > 0 && g1 < 1) {
@@ -521,8 +521,8 @@
       D.cyl(dx + 12, dy + 12, SLAB + 28 + 14 - hitV * 12, 5, 9, PAL().no);
       D.sphere(dx + 12, dy + 12, SLAB + 28 + 27 - hitV * 12, 5.5, PAL().no);
     });
-    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'SANCIONA', prog(t, sA, sA + 0.25) * (1 - prog(t, sV - 0.1, sV + 0.1)), { anchorBottom: true, size: 29, fill: PAL().ok }); });
-    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'OU VETA (TOTAL OU PARCIAL)', prog(t, sV, sV + 0.25) * (1 - prog(t, T.w(5, 'silêncio') - 0.2, T.w(5, 'silêncio'))), { anchorBottom: true, size: 26, fill: PAL().no }); });
+    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'SANCIONA', prog(t, sA, sA + 0.25) * (1 - prog(t, sV - 0.1, sV + 0.1)), { at: sA, anchorBottom: true, size: 29, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(dx, dy, SLAB + 120); R.pill(s.x, s.y, 'OU VETA (TOTAL OU PARCIAL)', prog(t, sV, sV + 0.25) * (1 - prog(t, T.w(5, 'silêncio') - 0.2, T.w(5, 'silêncio'))), { at: sV, anchorBottom: true, size: 26, fill: PAL().no }); });
     // relógio dos 15 dias úteis
     const kx = O.x + 225, ky = O.y + 160;
     const k0 = T.w(5, 'dias'), k1 = T.w(5, 'tácita');
@@ -542,8 +542,8 @@
       ctx.fillStyle = PAL().ink; ctx.beginPath(); ctx.arc(c.X, c.Y, 3, 0, Math.PI * 2); ctx.fill();
       ctx.restore();
     });
-    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, '15 DIAS ÚTEIS', prog(t, k0, k0 + 0.3) * (1 - prog(t, k1, k1 + 0.3)), { anchorBottom: true, size: 28 }); });
-    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, 'SILÊNCIO = SANÇÃO', prog(t, k1, k1 + 0.3) * (1 - prog(t, T.w(5, 'Congresso') - 0.2, T.w(5, 'Congresso'))), { anchorBottom: true, size: 28, fill: PAL().mustard }); });
+    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, '15 DIAS ÚTEIS', prog(t, k0, k0 + 0.3) * (1 - prog(t, k1, k1 + 0.3)), { at: k0, anchorBottom: true, size: 28 }); });
+    tags.push(() => { const s = R.S(kx, ky, SLAB + 130); R.pill(s.x, s.y, 'SILÊNCIO = SANÇÃO', prog(t, k1, k1 + 0.3) * (1 - prog(t, T.w(5, 'Congresso') - 0.2, T.w(5, 'Congresso'))), { at: k1, anchorBottom: true, size: 28, fill: PAL().mustard }); });
     // derrubada do veto: placar da sessão conjunta
     const d0 = T.w(5, 'Congresso'), d1 = T.w(5, 'deputados'), d2 = T.w(5, 'senadores');
     const nD = Math.round(257 * ease.out(prog(t, d1 - 0.2, d1 + 0.8))), nS = Math.round(41 * ease.out(prog(t, d2 - 0.2, d2 + 0.6)));
@@ -554,7 +554,7 @@
       g.fillStyle = nS >= 41 ? PAL().lampOn : PAL().paper; g.font = '500 22px "IBM Plex Mono"'; g.fillText(String(nS).padStart(3, '0'), 7, 68);
       g.fillStyle = 'rgba(240,233,216,0.75)'; g.font = '600 7.5px Inter'; g.fillText('SENADORES', 56, 59); g.fillText('DE 81', 56, 69);
     }));
-    tags.push(() => { const s = R.S(O.x + 76, O.y + 260, SLAB + 140); R.pill(s.x, s.y, 'MAIORIA ABSOLUTA NAS DUAS CASAS', prog(t, T.w(5, 'absoluta'), T.w(5, 'absoluta') + 0.3) * (1 - prog(t, R.BEATS[5].end + 0.6, R.BEATS[5].end + 1)), { anchorBottom: true, size: 24, fill: PAL().mustard }); });
+    tags.push(() => { const s = R.S(O.x + 76, O.y + 260, SLAB + 140); R.pill(s.x, s.y, 'MAIORIA ABSOLUTA NAS DUAS CASAS', prog(t, T.w(5, 'absoluta'), T.w(5, 'absoluta') + 0.3) * (1 - prog(t, R.BEATS[5].end + 0.6, R.BEATS[5].end + 1)), { at: T.w(5, 'absoluta'), anchorBottom: true, size: 24, fill: PAL().mustard }); });
     void d0;
   }
 
@@ -574,7 +574,7 @@
       for (let i = 0; i < 4; i++) D.box(O.x + 200, O.y + 205, SLAB + i * 5, 40, 30, 5, PAL().paper);
       if (outP > 0) { const x = lerp(O.x + 185, O.x + 220, outP), y = lerp(O.y + 150, O.y + 220, outP), c = P(x, y, SLAB + 26 + Math.sin(Math.PI * outP) * 20); D.sheet(c.X, c.Y, 1.2, -0.1, { tag: 'LEI', glow: 1 - outP * 0.6 }); }
     });
-    tags.push(() => { const s = R.S(O.x + 220, O.y + 220, SLAB + 120); R.pill(s.x, s.y, 'LEI PUBLICADA', prog(t, p0 + 1.4, p0 + 1.7) * (1 - prog(t, T.w(6, 'data') - 0.2, T.w(6, 'data'))), { anchorBottom: true, size: 29, fill: PAL().ok }); });
+    tags.push(() => { const s = R.S(O.x + 220, O.y + 220, SLAB + 120); R.pill(s.x, s.y, 'LEI PUBLICADA', prog(t, p0 + 1.4, p0 + 1.7) * (1 - prog(t, T.w(6, 'data') - 0.2, T.w(6, 'data'))), { at: p0 + 1.4, anchorBottom: true, size: 29, fill: PAL().ok }); });
     // calendário da vigência
     const cd = T.w(6, 'data'), c45 = T.w(6, '45');
     const n45 = Math.round(45 * ease.out(prog(t, c45 - 0.1, c45 + 1.0)));
@@ -585,7 +585,7 @@
       if (t >= c45 - 0.1) { g.font = '500 24px "IBM Plex Mono"'; g.fillText(String(n45), 8, 45); g.font = '600 7px Inter'; g.fillText('DIAS DEPOIS', 8, 59); }
       else if (t >= cd) { g.font = '600 8px Inter'; g.fillText('NA DATA', 8, 36); g.fillText('QUE A LEI', 8, 47); g.fillText('DEFINIR', 8, 58); }
     }));
-    tags.push(() => { const s = R.S(O.x + 47, O.y + 26, SLAB + 120); R.pill(s.x, s.y, 'SE A LEI NÃO DISSER: 45 DIAS', prog(t, c45 + 0.9, c45 + 1.2) * (1 - prog(t, R.BEATS[6].end + 0.6, R.BEATS[6].end + 1)), { anchorBottom: true, size: 24, fill: PAL().mustard }); });
+    tags.push(() => { const s = R.S(O.x + 47, O.y + 26, SLAB + 120); R.pill(s.x, s.y, 'SE A LEI NÃO DISSER: 45 DIAS', prog(t, c45 + 0.9, c45 + 1.2) * (1 - prog(t, R.BEATS[6].end + 0.6, R.BEATS[6].end + 1)), { at: c45 + 0.9, anchorBottom: true, size: 24, fill: PAL().mustard }); });
   }
 
   // primeiro quadrado: o Congresso Nacional em miniatura (mesmo modelo da abertura B)
@@ -692,7 +692,7 @@
     if (by > 0 && byOut > 0) {
       const A = P(ISL.s2.x + 250, ISL.s2.y + 200, 90), Bp = P(ISL.s4.x + 100, ISL.s4.y + 40, 90);
       items.push({ depth: 2e6, fn: () => dashArc(A, Bp, { X: 520, Y: -60 }, by, { alpha: byOut, color: PAL().mustard, w: 9 }) });
-      tags.push(() => { const s = R.S(ISL.s3.x + 300, ISL.s3.y + 60, 200); R.pill(s.x + 150, s.y, 'SEM PLENÁRIO', prog(by, 0.5, 0.8) * byOut, { size: 30, fill: PAL().mustard }); });
+      tags.push(() => { const s = R.S(ISL.s3.x + 300, ISL.s3.y + 60, 200); R.pill(s.x + 150, s.y, 'SEM PLENÁRIO', prog(by, 0.5, 0.8) * byOut, { at: T.w(3, 'Muitas'), size: 30, fill: PAL().mustard }); });
     }
     if (pl && pl.s < MACH.press - 22) {
       const p = at(pl.s), l = lift(pl.s);

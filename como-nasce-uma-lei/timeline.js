@@ -1,51 +1,40 @@
-// Tempos da narração e da câmera.
-// Sem áudio: cada trecho dura (palavras / RATE) segundos. Com o áudio gravado, preencha SYNC com
-// [início, fim] de cada trecho (em segundos) e, se quiser precisão por palavra, WORD_FIX.
+// Tempos da narração e da câmera, sincronizados com a narração gravada.
+// O áudio (fora do git: o repositório é público) entra no render com --audio.
 (function () {
   const R = window.R;
   const { clamp } = R.U;
 
-  // texto conferido (ROTEIRO.md) — um item por bloco da narração
-  const TEXTS = [
-    'Todo mundo vota pra deputado, senador, presidente… Mas pouca gente sabe como as coisas funcionam lá dentro. Você sabe como uma ideia vira lei? Vem que eu te mostro.',
-    'Tudo começa com um projeto de lei. Quem pode propor? Deputados, senadores, o Presidente da República; o STF, os tribunais superiores e o Procurador-Geral da República, nos assuntos de cada um… e até você: com a assinatura de 1% dos eleitores do país, espalhados em pelo menos cinco estados.',
-    'Projetos do Presidente, do STF, dos tribunais superiores e da população começam pela Câmara dos Deputados. Lá, passam pelas comissões: um relator estuda, dá parecer e pode propor mudanças. E a CCJ confere se o projeto respeita a Constituição.',
-    'Muitas vezes, as próprias comissões já aprovam o projeto, sem passar pelo plenário. Em outros casos, ele vai ao plenário, e precisa da maioria dos votos, com mais da metade dos 513 deputados presentes.',
-    'Aprovado, ele segue para o Senado, que revisa. Se aprovar, vai para o Presidente. Se rejeitar, é arquivado. Se mudar o texto, volta para a Câmara, que decide se aceita as mudanças.',
-    'O Presidente tem 15 dias úteis para sancionar ou vetar, no todo ou em parte. Se ficar em silêncio, é sanção tácita. E o veto não é o fim: o Congresso pode derrubá-lo com a maioria absoluta dos deputados e dos senadores.',
-    'Por fim, a lei é promulgada e publicada no Diário Oficial. E só então passa a valer: na data que o próprio texto diz ou, se ele não disser nada, 45 dias depois.',
-    'Agora você sabe como uma ideia vira lei. Salva esse vídeo e manda pra quem precisa entender isso.',
-  ];
   R.INTRO_END = 3.4; // intro: maquete se monta, câmera visita o Congresso + título, sem narração
 
-  // tempos reais do áudio: [[início, fim], ...] por trecho (vazio = estimado)
-  const SYNC = [];
-  const WORD_FIX = {}; // ex.: { '4:Senado': 61.2 } força o tempo de uma palavra
-  const RATE = 2.6, GAP = 0.6;
-  let t0 = R.INTRO_END + 0.3;
-  R.BEATS = TEXTS.map((text, i) => {
-    const n = text.split(/\s+/).length;
-    const [start, end] = SYNC[i] || [t0, t0 + n / RATE];
-    t0 = end + GAP;
-    return { start, end, text };
-  });
-  R.DURATION = R.BEATS[R.BEATS.length - 1].end + 2.4;
+  // Narração gravada, já sem as retomadas. Cada trecho falado:
+  // [início, fim, texto] em segundos do vídeo, medidos no áudio (pausas + transcrição).
+  const CHUNKS = [[[3.7, 6.89, "Todo mundo vota pra deputado, senador, presidente…"], [7.24, 9.89, "Mas pouca gente sabe como as coisas funcionam lá dentro."], [10.56, 12.44, "Você sabe como uma ideia vira lei?"], [13.2, 14.26, "Vem comigo que eu te mostro."]],
+    [[15.11, 16.75, "Tudo começa com um projeto de lei."], [17.11, 17.92, "Quem pode propor?"], [18.35, 21.86, "Deputados, senadores, o Presidente da República, o STF,"], [22.34, 23.53, "os tribunais superiores"], [23.87, 25.16, "e o Procurador-Geral da República,"], [25.56, 26.73, "nos assuntos de cada um…"], [27.25, 27.98, "e até você:"], [28.84, 31.36, "com a assinatura de 1% dos eleitores do país,"], [31.7, 33.84, "espalhados em pelo menos cinco estados."]],
+    [[34.73, 36.02, "Projetos do Presidente,"], [36.34, 39.16, "do STF, dos tribunais superiores e da população"], [39.54, 41.46, "começam pela Câmara dos Deputados."], [41.89, 42.23, "Lá,"], [42.55, 43.81, "passam pelas comissões:"], [44.26, 45.36, "um relator estuda,"], [45.71, 47.86, "dá parecer e pode propor mudanças."], [48.38, 51.55, "E a CCJ confere se o projeto respeita a Constituição."]],
+    [[52.44, 55.98, "Muitas vezes, as próprias comissões já aprovam o projeto,"], [56.3, 57.62, "sem passar pelo plenário."], [57.98, 61.94, "Em outros casos, ele vai ao plenário, e precisa da maioria dos votos,"], [62.34, 66.36, "com mais da metade dos 513 deputados presentes."]],
+    [[67.19, 67.82, "Aprovado,"], [68.11, 70.28, "ele segue para o Senado, que revisa."], [70.84, 71.6, "Se aprovar,"], [71.89, 73.08, "vai para o Presidente."], [73.44, 75.22, "Se rejeitar, é arquivado."], [75.82, 77.88, "Se mudar o texto, volta para a Câmara,"], [78.21, 79.99, "que decide se aceita as mudanças."]],
+    [[80.93, 84.07, "O Presidente tem 15 dias úteis para sancionar"], [84.47, 85.12, "ou vetar,"], [85.53, 87.23, "no todo ou em parte."], [87.68, 88.72, "Se ficar em silêncio,"], [89.07, 90.26, "é sanção tácita."], [91.13, 92.54, "E o veto não é o fim:"], [92.96, 94.49, "o Congresso pode derrubá-lo"], [94.78, 97.6, "com a maioria absoluta dos deputados e dos senadores."]],
+    [[98.01, 101.54, "Por fim, a lei é promulgada e publicada no Diário Oficial."], [101.85, 103.32, "E só então passa a valer:"], [103.78, 105.57, "na data que o próprio texto diz"], [105.9, 109.39, "ou, se ele não disser nada, 45 dias depois."]],
+    [[109.9, 112.01, "Agora você sabe como uma ideia vira lei."], [112.32, 115.02, "Salva esse vídeo e manda pra quem precisa entender isso."]]];
 
-  // tempo de cada palavra: proporcional ao tamanho, com pausas na pontuação
-  R.BEATS.forEach((b, bi) => {
-    const words = b.text.split(/\s+/);
-    const weights = words.map(w => w.replace(/[^\p{L}\p{N}%]/gu, '').length + 2.2);
-    const pauses = words.map(w => (/[.?!:…;]$/.test(w) ? 5 : /,$/.test(w) ? 2.2 : 0));
-    const total = weights.reduce((a, c, i) => a + c + pauses[i], 0) - pauses[pauses.length - 1];
-    let acc = 0;
-    b.words = words.map((w, i) => {
-      let t = b.start + (acc / total) * (b.end - b.start);
-      acc += weights[i] + pauses[i];
-      const key = `${bi}:${w.replace(/[^\p{L}\p{N}%-]/gu, '')}`;
-      if (WORD_FIX[key] != null) t = WORD_FIX[key];
-      return { w, t, end: b.start + ((acc - pauses[i]) / total) * (b.end - b.start) };
-    });
+
+  // palavras distribuídas dentro de cada trecho, proporcionais ao tamanho
+  R.BEATS = CHUNKS.map(cs => {
+    const words = [];
+    for (const [a, b, txt] of cs) {
+      const ws = txt.split(/\s+/);
+      const wt = ws.map(w => w.replace(/[^\p{L}\p{N}%]/gu, '').length + 2.2);
+      const tot = wt.reduce((x, y) => x + y, 0);
+      let acc = 0;
+      ws.forEach((w, i) => {
+        const t = a + (acc / tot) * (b - a);
+        acc += wt[i];
+        words.push({ w, t, end: a + (acc / tot) * (b - a) });
+      });
+    }
+    return { start: cs[0][0], end: cs[cs.length - 1][1], text: cs.map(c => c[2]).join(' '), words };
   });
+  R.DURATION = 117.2;
 
   // R.T.w(trecho, 'início da palavra', ocorrência) → segundos
   R.T = {
@@ -66,7 +55,15 @@
   R.cameraKeys = () => {
     const T = R.T, B = R.BEATS;
     const k = [];
-    const key = (t, at, zoom, o = {}) => k.push({ t, at, zoom, sy: o.sy ?? 900, dx: o.dx || 0, dy: o.dy || 0 });
+    // keyframes na ordem da narração; zoom grande (entrar/sair de estação) tem no mínimo 1,15 s
+    const key = (t, at, zoom, o = {}) => {
+      const prev = k[k.length - 1];
+      if (prev) {
+        const big = Math.max(zoom / prev.zoom, prev.zoom / zoom) > 1.8;
+        t = Math.max(t, prev.t + (big ? 1.15 : 0.25));
+      }
+      k.push({ t, at, zoom, sy: o.sy ?? 900, dx: o.dx || 0, dy: o.dy || 0 });
+    };
     const OUT = (t, hold = 0.6) => { key(t, 'all', 0.42, { sy: 1000 }); key(t + hold, 'all', 0.43, { sy: 1000 }); };
 
     // intro: maquete se monta → Congresso → votação

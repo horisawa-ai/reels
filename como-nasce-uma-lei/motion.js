@@ -202,7 +202,9 @@
     ctx.drawImage(grain[Math.floor(t * 30) % 3], 0, 0, W, H);
     ctx.globalAlpha = 1;
 
+    R.beginLabels();
     for (const fn of tags) fn();
+    R.flushLabels(t);
     drawTitle(t);
     drawOutro(t);
     if (R.CAPTIONS) R.drawCaptions(t);

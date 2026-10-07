@@ -277,7 +277,22 @@
   R.draw = { ink, inkForce, poly, face, box, contactShadow, onFace, frustum, cyl, dome, sphere, lamp, sheet };
 
   // ---------- rótulos em tela (tamanho fixo, não sofrem zoom)
+  // Balões com hora de entrada (o.at) passam por uma fila: quando um balão mais novo
+  // já entrou, os anteriores somem (só um balão por vez na tela).
+  let labelQueue = null;
+  R.beginLabels = () => { labelQueue = []; };
+  R.flushLabels = t => {
+    const q = labelQueue; labelQueue = null;
+    if (!q) return;
+    for (const l of q) {
+      if (l.p <= 0) continue;
+      let k = 1;
+      for (const m of q) if (m !== l && m.o.at > l.o.at && t >= m.o.at) k = Math.min(k, 1 - prog(t, m.o.at, m.o.at + 0.15));
+      if (k > 0) pill(l.x, l.y, l.text, l.p, Object.assign({}, l.o, { at: undefined, alpha: (l.o.alpha == null ? 1 : l.o.alpha) * k }));
+    }
+  };
   function pill(x, y, text, p, o = {}) {
+    if (labelQueue && o.at != null) { labelQueue.push({ x, y, text, p, o }); return; }
     if (p <= 0) return;
     const size = o.size || 26;
     ctx.save();
