@@ -288,7 +288,10 @@
       if (l.p <= 0) continue;
       let k = 1;
       for (const m of q) if (m !== l && m.o.at > l.o.at && t >= m.o.at) k = Math.min(k, 1 - prog(t, m.o.at, m.o.at + 0.15));
-      if (k > 0) pill(l.x, l.y, l.text, l.p, Object.assign({}, l.o, { at: undefined, alpha: (l.o.alpha == null ? 1 : l.o.alpha) * k }));
+      if (k > 0) {
+        if (R.LABEL_LOG && !(l.text in R.LABEL_LOG)) R.LABEL_LOG[l.text] = l.o.at; // usado pelo desenho de som
+        pill(l.x, l.y, l.text, l.p, Object.assign({}, l.o, { at: undefined, alpha: (l.o.alpha == null ? 1 : l.o.alpha) * k }));
+      }
     }
   };
   function pill(x, y, text, p, o = {}) {
