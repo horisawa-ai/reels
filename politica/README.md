@@ -9,7 +9,7 @@ Câmara e do Senado) antes de gravar.
 
 | # | Reels | Status | Pasta |
 |---|---|---|---|
-| 1 | **Como uma ideia vira lei?** O caminho de um projeto de lei, da proposta até o Diário Oficial. | Pronto (1min34) | [`como-nasce-uma-lei/`](como-nasce-uma-lei/) |
+| 1 | **Como uma ideia vira lei?** O caminho de um projeto de lei, da proposta até o Diário Oficial. | Pronto (1min37, com a vinheta da marca) | [`como-nasce-uma-lei/`](como-nasce-uma-lei/) |
 
 <img src="como-nasce-uma-lei/capa.png" width="270" alt="Capa: Como uma ideia vira lei?">
 
