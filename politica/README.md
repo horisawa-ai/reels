@@ -1,15 +1,15 @@
 # Política em 2 minutos
 
-Série de Reels do **@plenarinho.decente** que explica como a política brasileira funciona, em até 2 minutos,
-com uma maquete animada. **Tom 100% neutro:** mostra só as regras e os processos, sem partidos, sem
-pessoas e sem tomar lado. Cada informação é conferida na fonte oficial (Constituição, leis e sites da
-Câmara e do Senado) antes de gravar.
+Série de Reels do **@plenarinho.decente** sobre política brasileira, em até 2 minutos, com uma maquete
+animada. Bordão: **"Isso não é narrativa. É fato."** Cada informação é conferida na fonte (leis, CGU,
+PF, Câmara, Senado e imprensa) antes de gravar.
 
 ## Episódios
 
 | # | Reels | Status | Pasta |
 |---|---|---|---|
 | 1 | **Como uma ideia vira lei?** O caminho de um projeto de lei, da proposta até o Diário Oficial. | Pronto (1min37, com a vinheta da marca) | [`como-nasce-uma-lei/`](como-nasce-uma-lei/) |
+| 2 | **INSS: o desconto que ninguém autorizou.** Como as associações descontavam direto no benefício, o salto em 2023–2024, o alerta ao ministro e a Operação Sem Desconto. | Em produção | [`inss-descontos/`](inss-descontos/) |
 
 <img src="como-nasce-uma-lei/capa.png" width="270" alt="Capa: Como uma ideia vira lei?">
 
